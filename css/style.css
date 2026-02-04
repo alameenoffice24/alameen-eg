@@ -3,7 +3,7 @@
 
 /* CSS Variables */
 :root {
-  --primary-color: #6b8cae;
+  --primary-color: #3b6fb6;
   --primary-dark: #5a7a95;
   --primary-light: #7c9ebe;
   --secondary-color: #6b9b7a;
@@ -190,7 +190,7 @@ a:hover {
   right: 0;
   bottom: 0;
   background: url('../images/hero-bg.jpg') center/cover;
-  opacity: 0.45;
+  opacity: 0.85;
 ;
 }
 
@@ -549,7 +549,7 @@ a:hover {
   left: 30px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #25d366, #128c7e);
+  (135deg, #25d366, #128c7e);
   border-radius: 50%;
   display: flex;
   align-items: center;
