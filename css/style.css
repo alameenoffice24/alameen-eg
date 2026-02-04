@@ -115,7 +115,8 @@ a:hover {
 }
 
 .logo-img {
-  height: 45px;
+  height: 55px;
+  filter: none;
   width: auto;
   object-fit: contain;
 }
@@ -167,7 +168,11 @@ a:hover {
 /* Hero Section */
 .hero {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+  background: linear-gradient(135deg,
+  rgba(74, 111, 165, 0.45) 0%,
+  rgba(124, 158, 190, 0.45) 100%
+);
+
   display: flex;
   align-items: center;
   justify-content: center;
