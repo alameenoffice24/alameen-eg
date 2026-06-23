@@ -1,192 +1,159 @@
-// Alameen Travel Agency - Main JavaScript
-// RTL Arabic-first functionality
+// مكتب الأمين — Alameen Office | Main JavaScript
+// Arabic-first, RTL. Lightweight vanilla JS, restrained motion.
 
-document.addEventListener('DOMContentLoaded', function() {
-  // Mobile Menu Toggle
-  const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-  const navMenu = document.querySelector('.nav-menu');
-  
-  if (mobileMenuBtn) {
-    mobileMenuBtn.addEventListener('click', function() {
-      navMenu.classList.toggle('active');
-      const icon = this.querySelector('i');
-      if (navMenu.classList.contains('active')) {
-        icon.classList.remove('fa-bars');
-        icon.classList.add('fa-times');
-      } else {
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
-      }
-    });
-  }
-  
-  // Close mobile menu when clicking on a link
-  const navLinks = document.querySelectorAll('.nav-menu a');
-  navLinks.forEach(link => {
-    link.addEventListener('click', function() {
-      navMenu.classList.remove('active');
-      if (mobileMenuBtn) {
-        const icon = mobileMenuBtn.querySelector('i');
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
-      }
-    });
-  });
-  
-  // WhatsApp Modal
-  const whatsappFloat = document.querySelector('.whatsapp-float');
-  const modalOverlay = document.querySelector('.modal-overlay');
-  const modalClose = document.querySelector('.btn-close');
-  const btnCopy = document.querySelector('.btn-copy');
-  
-  if (whatsappFloat && modalOverlay) {
-    whatsappFloat.addEventListener('click', function() {
-      modalOverlay.classList.add('active');
-    });
-    
-    modalClose.addEventListener('click', function() {
-      modalOverlay.classList.remove('active');
-    });
-    
-    modalOverlay.addEventListener('click', function(e) {
-      if (e.target === modalOverlay) {
-        modalOverlay.classList.remove('active');
-      }
-    });
-    
-    // Copy phone number
-    if (btnCopy) {
-      btnCopy.addEventListener('click', function() {
-        const phoneNumber = '+201030008802';
-        navigator.clipboard.writeText(phoneNumber).then(function() {
-          showToast('تم نسخ رقم الهاتف!');
-          modalOverlay.classList.remove('active');
-        }).catch(function() {
-          showToast('حدث خطأ، يرجى المحاولة مرة أخرى');
-        });
-      });
+document.addEventListener('DOMContentLoaded', function () {
+  var prefersReducedMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- Mobile menu toggle ----
+  var mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+  var navMenu = document.querySelector('.nav-menu');
+
+  function closeMenu() {
+    if (!navMenu) return;
+    navMenu.classList.remove('active');
+    if (mobileMenuBtn) {
+      mobileMenuBtn.setAttribute('aria-expanded', 'false');
+      var icon = mobileMenuBtn.querySelector('i');
+      if (icon) { icon.classList.remove('fa-times'); icon.classList.add('fa-bars'); }
     }
   }
-  
-  // Contact Form Handler
-  const contactForm = document.querySelector('.contact-form');
+
+  if (mobileMenuBtn && navMenu) {
+    mobileMenuBtn.addEventListener('click', function () {
+      var isOpen = navMenu.classList.toggle('active');
+      this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      var icon = this.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('fa-bars', !isOpen);
+        icon.classList.toggle('fa-times', isOpen);
+      }
+    });
+  }
+
+  // Close mobile menu when clicking a nav link
+  document.querySelectorAll('.nav-menu a').forEach(function (link) {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // ---- WhatsApp modal (multiple triggers) ----
+  var whatsappTriggers = document.querySelectorAll('.js-whatsapp-trigger');
+  var modalOverlay = document.querySelector('.modal-overlay');
+  var modalClose = document.querySelector('.btn-close');
+  var btnCopy = document.querySelector('.btn-copy');
+
+  function openModal() { if (modalOverlay) modalOverlay.classList.add('active'); }
+  function closeModal() { if (modalOverlay) modalOverlay.classList.remove('active'); }
+
+  whatsappTriggers.forEach(function (btn) {
+    btn.addEventListener('click', openModal);
+  });
+
+  if (modalOverlay) {
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', function (e) {
+      if (e.target === modalOverlay) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  }
+
+  if (btnCopy) {
+    btnCopy.addEventListener('click', function () {
+      var phoneNumber = '+201030008802';
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(phoneNumber).then(function () {
+          showToast('تم نسخ رقم الهاتف!');
+          closeModal();
+        }).catch(function () {
+          showToast('تعذّر النسخ، يرجى المحاولة يدويًا');
+        });
+      } else {
+        showToast('تعذّر النسخ، يرجى المحاولة يدويًا');
+      }
+    });
+  }
+
+  // ---- Contact form (no backend — inform the user) ----
+  var contactForm = document.querySelector('.contact-form');
   if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+    contactForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
-      const message = document.getElementById('message').value.trim();
-      
-      // Basic validation
+      var name = (document.getElementById('name') || {}).value || '';
+      var email = (document.getElementById('email') || {}).value || '';
+      var phone = (document.getElementById('phone') || {}).value || '';
+      var message = (document.getElementById('message') || {}).value || '';
+      name = name.trim(); email = email.trim(); phone = phone.trim(); message = message.trim();
+
       if (!name || !email || !phone || !message) {
         showToast('يرجى ملء جميع الحقول المطلوبة');
         return;
       }
-      
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         showToast('يرجى إدخال بريد إلكتروني صحيح');
         return;
       }
-      
-      // Show message (no backend - just inform user)
-      showToast('شكراً لتواصلك معنا! سنتصل بك قريباً.');
+      showToast('شكرًا لتواصلك معنا! سنردّ عليك قريبًا.');
       contactForm.reset();
     });
   }
-  
-  // Smooth scroll for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+
+  // ---- Smooth scroll for in-page anchors ----
+  document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+    anchor.addEventListener('click', function (e) {
+      var href = this.getAttribute('href');
+      if (href === '#' || href.length < 2) return;
+      var target = document.querySelector(href);
+      if (!target) return;
       e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        const headerHeight = document.querySelector('.header').offsetHeight;
-        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth'
-        });
-      }
+      var header = document.querySelector('.header');
+      var headerHeight = header ? header.offsetHeight : 0;
+      var top = target.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+      window.scrollTo({ top: top, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     });
   });
-  
-  // Header scroll effect
-  const header = document.querySelector('.header');
-  let lastScroll = 0;
-  
-  window.addEventListener('scroll', function() {
-    const currentScroll = window.pageYOffset;
-    
-    if (currentScroll > 100) {
-      header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-    } else {
-      header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.08)';
-    }
-    
-    lastScroll = currentScroll;
-  });
-  
-  // Toast notification function
+
+  // ---- Header shadow on scroll ----
+  var header = document.querySelector('.header');
+  if (header) {
+    window.addEventListener('scroll', function () {
+      header.style.boxShadow = window.pageYOffset > 80
+        ? '0 2px 20px rgba(20, 40, 70, 0.12)'
+        : '0 2px 10px rgba(20, 40, 70, 0.06)';
+    }, { passive: true });
+  }
+
+  // ---- Toast ----
   function showToast(message) {
-    // Remove existing toast
-    const existingToast = document.querySelector('.toast');
-    if (existingToast) {
-      existingToast.remove();
-    }
-    
-    // Create new toast
-    const toast = document.createElement('div');
+    var existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    var toast = document.createElement('div');
     toast.className = 'toast';
+    toast.setAttribute('role', 'status');
     toast.textContent = message;
     document.body.appendChild(toast);
-    
-    // Show toast
-    setTimeout(() => {
-      toast.classList.add('show');
-    }, 10);
-    
-    // Hide toast after 3 seconds
-    setTimeout(() => {
+    setTimeout(function () { toast.classList.add('show'); }, 10);
+    setTimeout(function () {
       toast.classList.remove('show');
-      setTimeout(() => {
-        toast.remove();
-      }, 300);
+      setTimeout(function () { toast.remove(); }, 300);
     }, 3000);
   }
-  
-  // Add animation on scroll
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-  
-  const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-in');
-      }
-    });
-  }, observerOptions);
-  
-  // Observe service cards and feature items
-  document.querySelectorAll('.service-card, .feature-item').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-    observer.observe(el);
-  });
-  
-  // Add CSS for animation
-  const style = document.createElement('style');
-  style.textContent = `
-    .animate-in {
-      opacity: 1 !important;
-      transform: translateY(0) !important;
-    }
-  `;
-  document.head.appendChild(style);
+
+  // ---- Scroll reveal (restrained; skipped under reduced motion) ----
+  var revealEls = document.querySelectorAll('.reveal');
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+  } else {
+    var observer = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function (el) { observer.observe(el); });
+  }
 });

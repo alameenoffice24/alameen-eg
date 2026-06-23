@@ -1,50 +1,89 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+  <!-- Mark JS-enabled so scroll-reveal hides content ONLY when JS can reveal it -->
+  <script>document.documentElement.className += ' js';</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alameen Travel Agency | خدمات السفر والتأشيرات</title>
-  <meta name="description" content="الأمين لخدمات السفر والتأشيرات - حجز طيران، تأشيرات، استشارات سفر باحترافية في القاهرة، مصر">
-  <meta name="keywords" content="سفر, تأشيرات, حجز طيران, سياحة, مصر, القاهرة">
-  <meta name="author" content="Alameen Travel Agency">
+  <title>مكتب الأمين لخدمات الزيارة والتأشيرات | حجز طيران وتأشيرات</title>
+  <meta name="description" content="مكتب الأمين لخدمات الزيارة والتأشيرات — مساعدة ووساطة في حجز ومتابعة تذاكر الطيران، خدمات الزيارة والتأشيرات، وقطار الحرمين، ومتابعة طلبات العملاء. القاهرة، مصر.">
+  <meta name="keywords" content="مكتب الأمين, تأشيرات, حجز طيران, زيارة, قطار الحرمين, سفر, مصر, القاهرة">
+  <meta name="author" content="مكتب الأمين">
   <meta name="robots" content="index, follow">
-  
+  <link rel="canonical" href="https://alameen-eg.xyz/">
+
   <!-- Open Graph -->
-  <meta property="og:title" content="Alameen Travel Agency | خدمات السفر والتأشيرات">
-  <meta property="og:description" content="حجز طيران – تأشيرات – استشارات سفر باحترافية">
+  <meta property="og:title" content="مكتب الأمين لخدمات الزيارة والتأشيرات">
+  <meta property="og:description" content="مساعدة ووساطة في حجز الطيران والتأشيرات وخدمات السفر ومتابعة طلبات العملاء — القاهرة، مصر.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://alameen-eg.xyz">
+  <meta property="og:url" content="https://alameen-eg.xyz/">
+  <meta property="og:site_name" content="مكتب الأمين">
+  <meta property="og:image" content="https://alameen-eg.xyz/images/logo.png">
   <meta property="og:locale" content="ar_AR">
-  
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="مكتب الأمين لخدمات الزيارة والتأشيرات">
+  <meta name="twitter:description" content="مساعدة ووساطة في حجز الطيران والتأشيرات وخدمات السفر — القاهرة، مصر.">
+  <meta name="twitter:image" content="https://alameen-eg.xyz/images/logo.png">
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="images/logo.png">
-  
+
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Structured data: honest local business (no license/rating/address-street claims) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "مكتب الأمين لخدمات الزيارة والتأشيرات",
+    "alternateName": "Alameen Office",
+    "description": "مكتب خدمات يقدّم المساعدة والوساطة في حجز الطيران والتأشيرات وخدمات السفر ومتابعة طلبات العملاء.",
+    "url": "https://alameen-eg.xyz/",
+    "image": "https://alameen-eg.xyz/images/logo.png",
+    "logo": "https://alameen-eg.xyz/images/logo.png",
+    "email": "alameenoffice24@gmail.com",
+    "telephone": "+201030008802",
+    "areaServed": "EG",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "القاهرة",
+      "addressCountry": "EG"
+    },
+    "sameAs": [
+      "https://www.facebook.com/elameen24",
+      "https://www.instagram.com/elaminoffice/"
+    ]
+  }
+  </script>
 </head>
 <body>
+  <a href="#services" class="skip-link">تخطّي إلى المحتوى</a>
+
   <!-- Header -->
   <header class="header">
     <div class="container">
       <a href="index.html" class="logo">
         <img src="images/logo.png" alt="مكتب الأمين" class="logo-img">
-        <span class="logo-text">الأمين للسفر</span>
+        <span class="logo-text">مكتب الأمين</span>
       </a>
-      
-      <nav>
+
+      <nav aria-label="القائمة الرئيسية">
         <ul class="nav-menu">
           <li><a href="#home" class="active">الرئيسية</a></li>
           <li><a href="#services">خدماتنا</a></li>
-          <li><a href="#why-us">نمط عملنا</a></li>
-          <li><a href="#reviews">آراء العملاء</a></li>
+          <li><a href="#how">كيف نعمل</a></li>
+          <li><a href="#trust">الموثوقية</a></li>
           <li><a href="#contact">تواصل معنا</a></li>
         </ul>
       </nav>
-      
-      <button class="mobile-menu-btn" aria-label="القائمة">
+
+      <button class="mobile-menu-btn" aria-label="فتح القائمة" aria-expanded="false">
         <i class="fas fa-bars"></i>
       </button>
     </div>
@@ -53,55 +92,147 @@
   <!-- Hero Section -->
   <section id="home" class="hero">
     <div class="hero-content">
-      <h1>الأمين لخدمات السفر والتأشيرات</h1>
-      <p>حجز طيران – تأشيرات – استشارات سفر</p>
-      <a href="#contact" class="btn btn-primary">
-        <i class="fas fa-phone"></i>
-        تواصل معنا
-      </a>
+      <h1>مكتب الأمين لخدمات الزيارة والتأشيرات</h1>
+      <p>مساعدة ووساطة في حجز ومتابعة تذاكر الطيران، وخدمات الزيارة والتأشيرات، وقطار الحرمين، ومتابعة طلبات عملائنا — بخدمة واضحة ومتابعة بشرية عند الحاجة.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">
+          <i class="fas fa-paper-plane"></i>
+          ابدأ استفسارك
+        </a>
+        <a href="#services" class="btn btn-ghost">
+          <i class="fas fa-list-check"></i>
+          تعرّف على خدماتنا
+        </a>
+      </div>
     </div>
   </section>
 
   <!-- Services Section -->
   <section id="services" class="section">
     <div class="container">
-      <div class="section-title">
+      <div class="section-title reveal">
         <h2>خدماتنا</h2>
-        <p>نقدم مجموعة من خدمات السفر والسياحة</p>
+        <p>نساعدك في إجراءات السفر والتأشيرات ونتابع طلبك خطوة بخطوة</p>
       </div>
-      
+
       <div class="services-grid">
-        <div class="service-card">
-          <div class="service-icon">
-            <i class="fas fa-plane-departure"></i>
-          </div>
-          <h3>حجز الطيران</h3>
-          <p>المساعدة في حجوزات الطيران وإصدار بطاقة الصعود والمقاعد حسب المتاح وتنظيم الوزن الزائد</p>
+        <div class="service-card reveal">
+          <div class="service-icon"><i class="fas fa-plane-departure"></i></div>
+          <h3>حجز ومتابعة تذاكر الطيران</h3>
+          <p>المساعدة في حجز تذاكر الطيران ومتابعتها وتنظيم تفاصيل الرحلة حسب المتاح لدى مزوّدي الخدمة.</p>
         </div>
-        
-        <div class="service-card">
-          <div class="service-icon">
-            <i class="fas fa-passport"></i>
-          </div>
-          <h3>التأشيرات</h3>
-          <p>المساعدة في إجراءات التأشيرات السياحية والتجارية</p>
+
+        <div class="service-card reveal">
+          <div class="service-icon"><i class="fas fa-passport"></i></div>
+          <h3>خدمات الزيارة والتأشيرات</h3>
+          <p>المساعدة في إجراءات تأشيرات الزيارة وتجهيز المتطلبات، مع التوضيح أن القرار النهائي يعود للجهات الرسمية.</p>
         </div>
-        
-        <div class="service-card">
-          <div class="service-icon">
-            <i class="fas fa-comments"></i>
-          </div>
-          <h3>استشارات السفر</h3>
-          <p>استشارات متعلقة بالسفر والتأشيرات والإجراءات المطلوبة</p>
+
+        <div class="service-card reveal">
+          <div class="service-icon"><i class="fas fa-train"></i></div>
+          <h3>حجوزات قطار الحرمين</h3>
+          <p>المساعدة في الاستعلام عن مواعيد قطار الحرمين السريع وحجوزاته ومتابعتها للعملاء.</p>
         </div>
-        
-        <div class="service-card">
-          <div class="service-icon">
-            <i class="fas fa-map-marked-alt"></i>
-          </div>
-          <h3>خدمات السياحة</h3>
-          <p>تنسيق برامج سياحية تشمل الإقامة والمواصلات</p>
+
+        <div class="service-card reveal">
+          <div class="service-icon"><i class="fas fa-headset"></i></div>
+          <h3>متابعة طلبات العملاء</h3>
+          <p>متابعة طلبك من أول استفسار حتى إتمام الإجراء، مع تحديثك بالمستجدات والرد على أسئلتك.</p>
         </div>
+
+        <div class="service-card reveal">
+          <div class="service-icon"><i class="fas fa-route"></i></div>
+          <h3>خدمات السفر والمساعدة في الإجراءات</h3>
+          <p>المساعدة في ترتيب تفاصيل السفر وتوضيح الإجراءات والمتطلبات المرتبطة برحلتك.</p>
+        </div>
+
+        <div class="service-card reveal">
+          <div class="service-icon"><i class="fas fa-handshake"></i></div>
+          <h3>خدمات المكتب والوساطة</h3>
+          <p>نعمل كوسيط بينك وبين مزوّدي الخدمة والجهات الرسمية، ونوضّح الخيارات المتاحة بشكل مباشر.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how" class="section bg-light">
+    <div class="container">
+      <div class="section-title reveal">
+        <h2>كيف نعمل</h2>
+        <p>خطوات واضحة من الاستفسار حتى التأكيد</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card reveal">
+          <div class="step-num">1</div>
+          <h3>الاستفسار</h3>
+          <p>تواصل معنا عبر واتساب أو ماسنجر أو إنستغرام أو نموذج الموقع وأخبرنا بما تحتاجه.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">2</div>
+          <h3>مراجعة البيانات</h3>
+          <p>نراجع تفاصيل طلبك والبيانات المطلوبة ونوضّح المتطلبات والخيارات المتاحة.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">3</div>
+          <h3>العرض والمتابعة</h3>
+          <p>نعرض عليك الخيارات المناسبة ونتابع الإجراء مع مزوّدي الخدمة والجهات المعنية.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-num">4</div>
+          <h3>التأكيد قبل أي إجراء نهائي</h3>
+          <p>نؤكد معك كل التفاصيل (السعر، التواريخ، الأسماء) قبل أي دفع أو إصدار أو تقديم طلب.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust / Compliance Section -->
+  <section id="trust" class="section">
+    <div class="container">
+      <div class="section-title reveal">
+        <h2>الموثوقية والوضوح</h2>
+        <p>نلتزم بالشفافية في التعامل مع بياناتك وطلبك</p>
+      </div>
+
+      <div class="trust-grid">
+        <div class="trust-card reveal">
+          <div class="trust-icon"><i class="fas fa-file-shield"></i></div>
+          <div>
+            <h3>سياسة خصوصية وشروط منشورة</h3>
+            <p>سياسة الخصوصية والشروط والأحكام متاحة للجميع على الموقع.</p>
+          </div>
+        </div>
+        <div class="trust-card reveal">
+          <div class="trust-icon"><i class="fas fa-user-check"></i></div>
+          <div>
+            <h3>متابعة بشرية عند الحاجة</h3>
+            <p>قد يبدأ الرد بمساعد آلي، لكن موظفينا يراجعون المحادثات ويردّون يدويًا عند الحاجة.</p>
+          </div>
+        </div>
+        <div class="trust-card reveal">
+          <div class="trust-icon"><i class="fas fa-trash-can"></i></div>
+          <div>
+            <h3>حذف البيانات عند الطلب</h3>
+            <p>يمكنك طلب حذف بياناتك بمراسلتنا على البريد الرسمي في أي وقت.</p>
+          </div>
+        </div>
+        <div class="trust-card reveal">
+          <div class="trust-icon"><i class="fas fa-circle-info"></i></div>
+          <div>
+            <h3>اعتماد على جهات رسمية</h3>
+            <p>تعتمد بعض الخدمات على مزوّدين وجهات رسمية ومتطلبات قد تتغيّر، ولا نضمن أي موافقة نهائية.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="trust-note reveal">
+        نعمل كمكتب خدمات ووساطة، ولسنا جهة رسمية أو سلطة منح تأشيرات. الردود الآلية للمساعدة فقط ولا تُعد تأكيدًا نهائيًا حتى يؤكدها أحد موظفينا.
+        <span class="legal-quick-links">
+          <a href="privacy-policy.html"><i class="fas fa-shield-halved"></i> سياسة الخصوصية</a>
+          <a href="terms.html"><i class="fas fa-file-lines"></i> الشروط والأحكام</a>
+        </span>
       </div>
     </div>
   </section>
@@ -109,42 +240,31 @@
   <!-- Why Choose Us Section -->
   <section id="why-us" class="section bg-light">
     <div class="container">
-      <div class="section-title">
+      <div class="section-title reveal">
         <h2>نمط عملنا</h2>
-        <p>نسعى لتقديم خدمة موثوقة لعملائنا</p>
+        <p>نسعى لتقديم خدمة موثوقة ومتابعة واضحة لعملائنا</p>
       </div>
-      
+
       <div class="features-grid">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-award"></i>
-          </div>
+        <div class="feature-item reveal">
+          <div class="feature-icon"><i class="fas fa-award"></i></div>
           <h3>خبرة عملية</h3>
-          <p>فريق يعمل في مجال السفر والسياحة</p>
+          <p>تعامل عملي مع إجراءات السفر والتأشيرات.</p>
         </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
+        <div class="feature-item reveal">
+          <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
           <h3>شفافية</h3>
-          <p>توضيح الإجراءات والمتطلبات بشكل مباشر</p>
+          <p>توضيح الإجراءات والمتطلبات بشكل مباشر.</p>
         </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-headset"></i>
-          </div>
+        <div class="feature-item reveal">
+          <div class="feature-icon"><i class="fas fa-comments"></i></div>
           <h3>متابعة الطلبات</h3>
-          <p>المتابعة قد تمتد خارج أوقات العمل الرسمية للحالات المرتبطة بالسفر</p>
+          <p>متابعة حالتك والرد على استفساراتك أولًا بأول.</p>
         </div>
-        
-        <div class="feature-item">
-          <div class="feature-icon">
-            <i class="fas fa-bolt"></i>
-          </div>
+        <div class="feature-item reveal">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
           <h3>سرعة الرد</h3>
-          <p>يتم التعامل مع الحالات العاجلة المرتبطة بالسفر في أي وقت حسب طبيعة الطلب</p>
+          <p>تعامل سريع مع الحالات المرتبطة بالسفر حسب طبيعة الطلب.</p>
         </div>
       </div>
     </div>
@@ -153,49 +273,64 @@
   <!-- Customer Reviews Section -->
   <section id="reviews" class="section">
     <div class="container">
-      <div class="section-title">
+      <div class="section-title reveal">
         <h2>آراء العملاء</h2>
-        <p>يمكن الاطلاع على تفاعل وآراء بعض عملائنا من خلال الصفحات الرسمية الخاصة بنا على وسائل التواصل الاجتماعي</p>
+        <p>يمكنك الاطلاع على تفاعل وآراء بعض عملائنا من خلال صفحاتنا الرسمية على وسائل التواصل</p>
       </div>
-      
-      <div class="services-grid" style="max-width: 600px; margin: 0 auto;">
-        <a href="https://www.facebook.com/elameen24/reviews" target="_blank" rel="noopener noreferrer" class="service-card" style="text-decoration: none; color: inherit;">
+
+      <div class="services-grid" style="max-width: 640px; margin: 0 auto;">
+        <a href="https://www.facebook.com/elameen24/reviews" target="_blank" rel="noopener noreferrer" class="service-card reveal" style="text-decoration: none; color: inherit;">
           <div class="service-icon" style="background: linear-gradient(135deg, #1877f2, #166fe5);">
             <i class="fab fa-facebook-f"></i>
           </div>
-          <h3>عرض آراء العملاء على Facebook</h3>
-          <p>صفحة التقييمات</p>
+          <h3>آراء العملاء على فيسبوك</h3>
+          <p>صفحة التقييمات الرسمية</p>
         </a>
-        
-        <a href="https://facebook.com/elameen24/posts/pfbid02pAzE8xgJHhWX54oRH3GvLvtVxaAUmRzjNsL4v2AkpPwmXV7khjtQ85ef7uiGcC2tl" target="_blank" rel="noopener noreferrer" class="service-card" style="text-decoration: none; color: inherit;">
+
+        <a href="https://www.facebook.com/elameen24" target="_blank" rel="noopener noreferrer" class="service-card reveal" style="text-decoration: none; color: inherit;">
           <div class="service-icon" style="background: linear-gradient(135deg, #1877f2, #166fe5);">
             <i class="fab fa-facebook-f"></i>
           </div>
-          <h3>عرض تفاعل العملاء على منشوراتنا الرسمية</h3>
-          <p>المنشور المثبت</p>
+          <h3>تفاعل العملاء على منشوراتنا</h3>
+          <p>صفحتنا الرسمية على فيسبوك</p>
         </a>
       </div>
     </div>
   </section>
 
   <!-- Contact Section -->
-  <section id="contact" class="section">
+  <section id="contact" class="section bg-light">
     <div class="container">
-      <div class="section-title">
+      <div class="section-title reveal">
         <h2>تواصل معنا</h2>
-        <p>للاستفسارات والطلبات</p>
+        <p>راسلنا على القناة الأنسب لك وسنردّ عليك</p>
       </div>
-      
+
       <div class="contact-wrapper">
-        <div class="contact-info">
-          <h3>معلومات التواصل</h3>
-          
+        <div class="contact-info reveal">
+          <h3>القنوات المتاحة</h3>
+
+          <div class="channel-buttons">
+            <a href="https://m.me/elameen24" target="_blank" rel="noopener noreferrer" class="channel-btn messenger">
+              <i class="fab fa-facebook-messenger"></i>
+              راسلنا على ماسنجر
+            </a>
+            <button type="button" class="channel-btn whatsapp js-whatsapp-trigger">
+              <i class="fab fa-whatsapp"></i>
+              واتساب
+            </button>
+            <a href="https://www.instagram.com/elaminoffice/" target="_blank" rel="noopener noreferrer" class="channel-btn instagram">
+              <i class="fab fa-instagram"></i>
+              إنستغرام
+            </a>
+          </div>
+
           <ul class="contact-list">
             <li>
               <i class="fas fa-envelope"></i>
               <div>
                 <strong>البريد الإلكتروني</strong>
-                <a href="mailto:info@alameen-eg.xyz">info@alameen-eg.xyz</a>
+                <a href="mailto:alameenoffice24@gmail.com">alameenoffice24@gmail.com</a>
               </div>
             </li>
             <li>
@@ -212,45 +347,39 @@
                 <a href="https://www.facebook.com/elameen24" target="_blank" rel="noopener noreferrer">facebook.com/elameen24</a>
               </div>
             </li>
-            <li>
-              <i class="fab fa-instagram"></i>
-              <div>
-                <strong>إنستغرام</strong>
-                <a href="https://www.instagram.com/elaminoffice/" target="_blank" rel="noopener noreferrer">@elaminoffice</a>
-              </div>
-            </li>
           </ul>
-          
+
           <div class="whatsapp-notice">
-            <p><i class="fab fa-whatsapp" style="margin-left: 0.5rem; color: var(--primary-color);"></i> واتساب الرسمي قيد التفعيل وسيعمل قريبًا بعد موافقة واتساب بزنس.</p>
+            <p><i class="fab fa-whatsapp" style="margin-left: 0.5rem; color: var(--secondary-color);"></i> واتساب الرسمي (واتساب بزنس) قيد التفعيل وسيعمل قريبًا. للتواصل الآن استخدم ماسنجر أو رقم خدمة العملاء.</p>
           </div>
         </div>
-        
-        <form class="contact-form">
+
+        <form class="contact-form reveal" novalidate>
           <div class="form-group">
             <label for="name">الاسم *</label>
             <input type="text" id="name" name="name" placeholder="أدخل اسمك الكامل" required>
           </div>
-          
+
           <div class="form-group">
             <label for="email">البريد الإلكتروني *</label>
             <input type="email" id="email" name="email" placeholder="example@email.com" required>
           </div>
-          
+
           <div class="form-group">
             <label for="phone">رقم الهاتف *</label>
             <input type="tel" id="phone" name="phone" placeholder="مثال: 01030008802" required>
           </div>
-          
+
           <div class="form-group">
             <label for="message">الرسالة *</label>
             <textarea id="message" name="message" placeholder="اكتب رسالتك هنا..." required></textarea>
           </div>
-          
+
           <button type="submit" class="btn btn-primary" style="width: 100%;">
             <i class="fas fa-paper-plane"></i>
             إرسال الرسالة
           </button>
+          <p class="form-hint">بإرسالك الرسالة فإنك توافق على <a href="privacy-policy.html">سياسة الخصوصية</a>. سنتواصل معك على البيانات التي أدخلتها.</p>
         </form>
       </div>
     </div>
@@ -263,57 +392,54 @@
         <div class="footer-brand">
           <a href="index.html" class="logo">
             <img src="images/logo.png" alt="مكتب الأمين" class="logo-img">
-            <span class="logo-text">الأمين للسفر</span>
+            <span class="logo-text">مكتب الأمين</span>
           </a>
-          <p>نقدم خدمات سفر وتأشيرات لعملائنا في مصر</p>
+          <p>مكتب خدمات يقدّم المساعدة والوساطة في حجز الطيران والتأشيرات وخدمات السفر — القاهرة، مصر.</p>
+          <p class="footer-disclaimer">مكتب الأمين وسيط خدمات وليس جهة رسمية أو سلطة منح تأشيرات. تعتمد بعض الخدمات على مزوّدين وجهات رسمية ومتطلبات قد تتغيّر.</p>
         </div>
-        
+
         <div class="footer-links">
           <h4>روابط سريعة</h4>
           <ul>
             <li><a href="#home">الرئيسية</a></li>
             <li><a href="#services">خدماتنا</a></li>
-            <li><a href="#why-us">نمط عملنا</a></li>
-            <li><a href="#reviews">آراء العملاء</a></li>
+            <li><a href="#how">كيف نعمل</a></li>
+            <li><a href="#trust">الموثوقية</a></li>
             <li><a href="#contact">تواصل معنا</a></li>
           </ul>
         </div>
-        
+
         <div class="footer-links">
           <h4>معلومات قانونية</h4>
           <ul>
             <li><a href="privacy-policy.html">سياسة الخصوصية</a></li>
             <li><a href="terms.html">الشروط والأحكام</a></li>
+            <li><a href="mailto:alameenoffice24@gmail.com">alameenoffice24@gmail.com</a></li>
           </ul>
         </div>
       </div>
-      
+
       <div class="footer-bottom">
-        <p>© 2026 Alameen Travel Agency – Cairo, Egypt</p>
+        <p>© 2026 مكتب الأمين — القاهرة، مصر</p>
       </div>
     </div>
   </footer>
 
   <!-- Floating WhatsApp Button -->
-  <button class="whatsapp-float" aria-label="واتساب">
+  <button class="whatsapp-float js-whatsapp-trigger" aria-label="واتساب">
     <i class="fab fa-whatsapp"></i>
   </button>
 
   <!-- WhatsApp Modal -->
   <div class="modal-overlay">
-    <div class="modal">
-      <div class="modal-icon">
-        <i class="fab fa-whatsapp"></i>
-      </div>
-      <h3>واتساب قيد التفعيل</h3>
-      <p>زر واتساب الرسمي قيد التفعيل وسيعمل فور موافقة واتساب بزنس ✅</p>
-      <p>للتواصل الآن استخدم رقم خدمة العملاء:</p>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wa-modal-title">
+      <div class="modal-icon"><i class="fab fa-whatsapp"></i></div>
+      <h3 id="wa-modal-title">واتساب قيد التفعيل</h3>
+      <p>زر واتساب الرسمي (واتساب بزنس) قيد التفعيل وسيعمل قريبًا ✅</p>
+      <p>للتواصل الآن استخدم ماسنجر أو رقم خدمة العملاء:</p>
       <div class="phone-display">+20 1030008802</div>
       <div class="modal-buttons">
-        <button class="btn-copy">
-          <i class="fas fa-copy"></i>
-          نسخ الرقم
-        </button>
+        <button class="btn-copy"><i class="fas fa-copy"></i> نسخ الرقم</button>
         <button class="btn-close">إغلاق</button>
       </div>
     </div>
