@@ -457,26 +457,29 @@ ul { list-style: none; }
   70% { box-shadow: 0 10px 26px rgba(16, 36, 64, 0.16), 0 8px 22px rgba(212, 161, 42, 0.24), 0 0 0 13px rgba(212, 161, 42, 0); }
   100% { box-shadow: 0 10px 26px rgba(16, 36, 64, 0.16), 0 8px 22px rgba(212, 161, 42, 0.24), 0 0 0 0 rgba(212, 161, 42, 0); }
 }
+/* Tall-by-default: the panel is a fixed, near-full-height right-side widget the
+   moment it opens (not only when expanded). Width stays narrow (~520px). */
 .chat-panel {
-  position: absolute; right: 0; bottom: 68px; width: min(520px, calc(100vw - 40px));
-  height: calc(100vh - 96px); max-height: calc(100vh - 96px);
+  position: fixed; right: 22px; top: 14px; bottom: 14px; left: auto; z-index: 50;
+  width: min(520px, calc(100vw - 40px));
+  height: auto; max-height: calc(100vh - 28px);
   display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto;
   background: #fff; border: 3px solid var(--navy-800);
   border-radius: var(--radius-lg); box-shadow: 0 0 0 2px rgba(15, 44, 77, 0.9), 0 0 0 4px rgba(212, 161, 42, 0.22), 0 26px 60px rgba(11, 31, 56, 0.34), 0 12px 30px rgba(212, 161, 42, 0.14); overflow: hidden;
-  opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.98);
+  opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.985);
   transition: opacity 0.28s cubic-bezier(0.22,0.61,0.36,1), transform 0.28s cubic-bezier(0.22,0.61,0.36,1), visibility 0.28s;
 }
 .site-chat.open .chat-panel { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-/* Expanded desktop mode — a TALL right-side support panel (not wider). Same width
-   as normal; height maximized to nearly fill the viewport. Anchored to the viewport
-   so header stays at top and the input stays visible at the bottom. */
-.site-chat.expanded .chat-panel {
-  position: fixed; right: 16px; top: 2px; bottom: 2px; left: auto; z-index: 60;
+/* Expanded = the slightly tighter maximum (2px gaps, a touch wider). */
+.site-chat.open.expanded .chat-panel {
+  top: 2px; bottom: 2px; right: 16px; z-index: 60;
   width: min(540px, calc(100vw - 32px));
-  height: auto; max-height: calc(100vh - 4px);
+  max-height: calc(100vh - 4px);
 }
-/* Expanded covers the launcher — hide it so it never peeks out below the panel. */
-.site-chat.expanded .chat-launcher { opacity: 0; visibility: hidden; pointer-events: none; }
+/* Hide the launcher only WHILE the chat is open (normal or expanded). When the chat
+   is closed the launcher is always visible again — fixes the disappearing-launcher bug
+   where a saved .expanded state kept the launcher hidden after close. */
+.site-chat.open .chat-launcher { opacity: 0; visibility: hidden; pointer-events: none; }
 .chat-header {
   display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
   padding: 0.55rem 0.95rem; background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
@@ -493,10 +496,12 @@ ul { list-style: none; }
 .chat-close:hover, .chat-expand:hover { background: rgba(255,255,255,0.16); }
 .chat-expand:focus-visible, .chat-close:focus-visible { outline: 2px solid var(--gold-400); outline-offset: 2px; }
 .chat-messages {
-  min-height: 0; overflow-y: auto; padding: 0.85rem; background: var(--bg-soft);
+  min-height: 0; overflow-y: auto; padding: 0.85rem; background: var(--bg-tint);
   display: flex; flex-direction: column; gap: 0.6rem;
   overscroll-behavior: contain;
 }
+/* Sound toggle row removed from the UI (notifications are automatic now). */
+.chat-settings { display: none !important; }
 .chat-message {
   max-width: 90%; border-radius: 16px; padding: 0.78rem 0.94rem;
   font-size: 0.94rem; line-height: 1.8; box-shadow: var(--shadow-sm);
@@ -504,7 +509,7 @@ ul { list-style: none; }
   unicode-bidi: plaintext; text-align: right;
 }
 .chat-message.bot {
-  align-self: flex-start; background: #fff; color: var(--text); border: 1px solid var(--border);
+  align-self: flex-start; background: #fff; color: var(--ink); border: 1px solid var(--border);
   border-bottom-left-radius: 6px;
 }
 .chat-message.user {
@@ -664,12 +669,9 @@ ul { list-style: none; }
   .whatsapp-float { width: 52px; height: 52px; font-size: 1.5rem; bottom: 18px; left: 18px; }
   .site-chat { right: 14px; bottom: 18px; }
   .chat-launcher { height: 50px; padding-inline: 0.95rem 1.05rem; font-size: 0.88rem; }
-  .chat-panel { right: 0; bottom: 60px; width: calc(100vw - 16px); height: calc(100vh - 84px); max-height: calc(100vh - 84px); }
-  /* Expanded on mobile = near full-height modal anchored to the viewport. */
-  .site-chat.expanded .chat-panel {
-    position: fixed; top: 3px; bottom: 3px; left: 5px; right: 5px; z-index: 60;
-    width: auto; height: auto; max-height: calc(100vh - 6px); border-radius: 18px;
-  }
+  /* Mobile: tall by default (near full height), narrow side gaps. */
+  .chat-panel { top: 8px; bottom: 8px; left: 8px; right: 8px; width: auto; height: auto; max-height: calc(100vh - 16px); border-radius: 18px; }
+  .site-chat.open.expanded .chat-panel { top: 4px; bottom: 4px; left: 5px; right: 5px; max-height: calc(100vh - 8px); }
   .chat-message { max-width: 92%; font-size: 0.9rem; line-height: 1.7; }
 }
 

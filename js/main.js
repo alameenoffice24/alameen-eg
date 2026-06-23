@@ -293,28 +293,27 @@ document.addEventListener('DOMContentLoaded', function () {
     notifyIncomingBatch(incoming);
   }
 
+  // Notifications/sound are automatic now — no visible toggle row. Sound is enabled
+  // after the user opens the chat (a user gesture that satisfies browser autoplay
+  // policy) and only plays while the tab is in the background; it fails silently if
+  // the browser blocks audio. Any previously injected settings row is removed.
   function buildNotificationSettings() {
-    if (!chatPanel || chatPanel.querySelector('.chat-settings')) return;
-    var privacy = chatPanel.querySelector('.chat-privacy');
-    var settings = document.createElement('div');
-    settings.className = 'chat-settings';
-    var label = document.createElement('label');
-    var input = document.createElement('input');
-    input.type = 'checkbox';
-    input.className = 'chat-sound-toggle';
-    var text = document.createElement('span');
-    text.textContent = 'تشغيل تنبيه صوتي';
-    label.appendChild(input);
-    label.appendChild(text);
-    settings.appendChild(label);
-    chatPanel.insertBefore(settings, privacy || null);
-    soundToggle = input;
-    input.addEventListener('change', function () {
-      chatInteracted = true;
-      soundEnabled = input.checked;
-      ensureNotificationPermission();
-      if (soundEnabled) playSoftNotificationSound();
-    });
+    if (chatPanel) {
+      var stale = chatPanel.querySelector('.chat-settings');
+      if (stale) stale.remove();
+    }
+    soundToggle = null;
+  }
+
+  function enableAutoSound() {
+    soundEnabled = true;
+    try {
+      var AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        audioContext = audioContext || new AudioCtx();
+        if (audioContext.state === 'suspended') audioContext.resume();
+      }
+    } catch (_) {}
   }
 
   function addChatMessage(text, type, key) {
@@ -428,6 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!siteChat || !chatPanel || !chatLauncher) return;
     chatInteracted = true;
     buildNotificationSettings();
+    enableAutoSound();
     resetUnreadCount();
     ensureNotificationPermission();
     siteChat.classList.add('open');
