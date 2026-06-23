@@ -461,8 +461,8 @@ ul { list-style: none; }
   position: absolute; right: 0; bottom: 68px; width: min(520px, calc(100vw - 40px));
   height: calc(100vh - 96px); max-height: calc(100vh - 96px);
   display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto;
-  background: #fff; border: 2px solid var(--navy-800);
-  border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(11, 31, 56, 0.08), 0 24px 58px rgba(11, 31, 56, 0.26), 0 12px 30px rgba(212, 161, 42, 0.12); overflow: hidden;
+  background: #fff; border: 3px solid var(--navy-800);
+  border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(15, 44, 77, 0.55), 0 24px 58px rgba(11, 31, 56, 0.30), 0 12px 30px rgba(212, 161, 42, 0.14); overflow: hidden;
   opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.98);
   transition: opacity 0.28s cubic-bezier(0.22,0.61,0.36,1), transform 0.28s cubic-bezier(0.22,0.61,0.36,1), visibility 0.28s;
 }
@@ -471,10 +471,12 @@ ul { list-style: none; }
    as normal; height maximized to nearly fill the viewport. Anchored to the viewport
    so header stays at top and the input stays visible at the bottom. */
 .site-chat.expanded .chat-panel {
-  position: fixed; right: 24px; top: 4px; bottom: 4px; left: auto; z-index: 10;
+  position: fixed; right: 24px; top: 4px; bottom: 4px; left: auto; z-index: 60;
   width: min(540px, calc(100vw - 40px));
   height: auto; max-height: calc(100vh - 8px);
 }
+/* Expanded covers the launcher — hide it so it never peeks out below the panel. */
+.site-chat.expanded .chat-launcher { opacity: 0; visibility: hidden; pointer-events: none; }
 .chat-header {
   display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
   padding: 0.55rem 0.95rem; background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
@@ -514,7 +516,7 @@ ul { list-style: none; }
   padding: 0.45rem 0.7rem;
 }
 .chat-form {
-  display: grid; grid-template-columns: 1fr 44px; gap: 0.55rem; padding: 0.6rem 0.7rem;
+  display: grid; grid-template-columns: 1fr 44px; gap: 0.55rem; padding: 0.5rem 0.7rem;
   background: #fff; border-top: 1px solid var(--border);
 }
 .chat-form textarea {
@@ -538,7 +540,7 @@ ul { list-style: none; }
 .chat-form button:hover { transform: translateY(-1px); }
 .chat-form button:disabled { opacity: 0.55; cursor: wait; transform: none; }
 .chat-settings {
-  padding: 0.45rem 0.9rem 0; background: #fff; border-top: 1px solid rgba(227, 233, 241, 0.74);
+  padding: 0.3rem 0.9rem 0; background: #fff; border-top: 1px solid rgba(227, 233, 241, 0.74);
 }
 .chat-settings label {
   display: inline-flex; align-items: center; gap: 0.45rem;
@@ -551,8 +553,8 @@ ul { list-style: none; }
   outline: 2px solid rgba(212, 161, 42, 0.86); outline-offset: 2px;
 }
 .chat-privacy {
-  padding: 0.1rem 0.9rem 0.45rem; background: #fff; color: var(--text-muted);
-  font-size: 0.7rem; line-height: 1.4; margin-bottom: 0;
+  padding: 0.05rem 0.9rem 0.4rem; background: #fff; color: var(--text-muted);
+  font-size: 0.7rem; line-height: 1.38; margin-bottom: 0;
 }
 .chat-privacy a { color: var(--navy-700); font-weight: 700; }
 
