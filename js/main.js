@@ -136,8 +136,17 @@ document.addEventListener('DOMContentLoaded', function () {
   var visitorKey = 'alameen_website_chat_visitor_id';
   var greetingText = 'أهلاً بيك في مكتب الأمين ✈️\n\nاختار رقم الخدمة 👇\n\n1- ✈️ حجز / تعديل طيران\n2- 📋 تأشيرات\n3- 🇸🇦 زيارة عائلية للسعودية\n4- 🚄 قطار الحرمين\n5- 🔲 باركود تأشيرات السعودية\n6- 🔒 موافقات / خطابات ضمان\n7- 📁 تساهيل / إنجاز\n8- ℹ️ استفسار عام\n9- ⭕ طلب خارج القائمة\n\n──────────────\n99- ❌ إنهاء المحادثة\n#- 👤 التواصل مع موظف\n\nأو اكتب استفسارك مباشرةً وهنساعدك. ✍️';
   var chatSeenMessages = {};
+  var knownServerMessages = {};
   var historyLoaded = false;
   var pollTimer = null;
+  var originalTitle = document.title;
+  var unreadCount = 0;
+  var windowHasFocus = document.hasFocus();
+  var notificationPermissionAsked = false;
+  var soundToggle = null;
+  var soundEnabled = false;
+  var audioContext = null;
+  var chatInteracted = false;
   // Dynamic welcome menu fetched from the controller (same source as the AMEEN bot menu);
   // greetingText above is the offline fallback if the fetch fails.
   var welcomeMenuText = null;
@@ -172,6 +181,140 @@ document.addEventListener('DOMContentLoaded', function () {
     return String(fallbackPrefix || 'msg') + ':' + String(item && item.created_at || '') + ':' + String(item && item.text || '');
   }
 
+  function isIncomingChatMessage(item) {
+    if (!item) return false;
+    var sender = String(item.sender_type || '').toLowerCase();
+    var direction = String(item.direction || '').toLowerCase();
+    return direction !== 'inbound' && sender !== 'customer' && sender !== 'user';
+  }
+
+  function messagePreview(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+  }
+
+  function pageIsBackground() {
+    return document.hidden || !windowHasFocus;
+  }
+
+  function shouldBadgeIncomingMessage() {
+    return pageIsBackground() || !(siteChat && siteChat.classList.contains('open'));
+  }
+
+  function updateUnreadUi() {
+    if (chatLauncher) {
+      if (unreadCount > 0) {
+        chatLauncher.setAttribute('data-unread', unreadCount > 9 ? '9+' : String(unreadCount));
+        chatLauncher.classList.add('has-unread');
+      } else {
+        chatLauncher.removeAttribute('data-unread');
+        chatLauncher.classList.remove('has-unread');
+      }
+    }
+    document.title = unreadCount > 0 && pageIsBackground()
+      ? '(' + unreadCount + ') رسالة جديدة - مكتب الأمين'
+      : originalTitle;
+  }
+
+  function resetUnreadCount() {
+    unreadCount = 0;
+    updateUnreadUi();
+  }
+
+  function ensureNotificationPermission() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'default' || notificationPermissionAsked || !chatInteracted) return;
+    notificationPermissionAsked = true;
+    try { Notification.requestPermission(); } catch (_) {}
+  }
+
+  function showBrowserNotification(text) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+      var notification = new Notification('رسالة جديدة من مكتب الأمين', {
+        body: messagePreview(text),
+        tag: 'alameen-website-chat',
+        silent: true
+      });
+      notification.onclick = function () {
+        window.focus();
+        openChat();
+        notification.close();
+      };
+    } catch (_) {}
+  }
+
+  function playSoftNotificationSound() {
+    if (!soundEnabled || !chatInteracted) return;
+    try {
+      var AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      audioContext = audioContext || new AudioCtx();
+      if (audioContext.state === 'suspended') audioContext.resume();
+      var osc = audioContext.createOscillator();
+      var gain = audioContext.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(660, audioContext.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.16);
+      gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.045, audioContext.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.22);
+      osc.connect(gain);
+      gain.connect(audioContext.destination);
+      osc.start();
+      osc.stop(audioContext.currentTime + 0.24);
+    } catch (_) {}
+  }
+
+  function notifyIncomingBatch(messages) {
+    if (!messages.length || !shouldBadgeIncomingMessage()) return;
+    unreadCount += messages.length;
+    updateUnreadUi();
+    if (pageIsBackground()) {
+      showBrowserNotification(messages[messages.length - 1].text);
+      playSoftNotificationSound();
+    }
+  }
+
+  function trackIncomingMessages(messages, options) {
+    if (!Array.isArray(messages)) return;
+    var notify = options && options.notify;
+    var incoming = [];
+    messages.forEach(function (item, index) {
+      var key = messageKey(item, 'server:' + index);
+      if (!key) return;
+      var alreadyKnown = Boolean(knownServerMessages[key]);
+      knownServerMessages[key] = true;
+      if (notify && historyLoaded && !alreadyKnown && isIncomingChatMessage(item)) {
+        incoming.push(item);
+      }
+    });
+    notifyIncomingBatch(incoming);
+  }
+
+  function buildNotificationSettings() {
+    if (!chatPanel || chatPanel.querySelector('.chat-settings')) return;
+    var privacy = chatPanel.querySelector('.chat-privacy');
+    var settings = document.createElement('div');
+    settings.className = 'chat-settings';
+    var label = document.createElement('label');
+    var input = document.createElement('input');
+    input.type = 'checkbox';
+    input.className = 'chat-sound-toggle';
+    var text = document.createElement('span');
+    text.textContent = 'تشغيل تنبيه صوتي';
+    label.appendChild(input);
+    label.appendChild(text);
+    settings.appendChild(label);
+    chatPanel.insertBefore(settings, privacy || null);
+    soundToggle = input;
+    input.addEventListener('change', function () {
+      chatInteracted = true;
+      soundEnabled = input.checked;
+      ensureNotificationPermission();
+      if (soundEnabled) playSoftNotificationSound();
+    });
+  }
+
   function addChatMessage(text, type, key) {
     if (!chatMessages) return null;
     var normalizedKey = key ? String(key) : '';
@@ -186,8 +329,9 @@ document.addEventListener('DOMContentLoaded', function () {
     return msg;
   }
 
-  function renderConversationMessages(messages) {
+  function renderConversationMessages(messages, options) {
     if (!chatMessages || !Array.isArray(messages)) return;
+    trackIncomingMessages(messages, { notify: options && options.notify });
     chatMessages.textContent = '';
     chatSeenMessages = {};
     if (!messages.length) {
@@ -237,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (data) {
         if (!res.ok || data.ok === false) throw new Error(data.error || 'LOAD_FAILED');
-        renderConversationMessages(data.messages || []);
+        renderConversationMessages(data.messages || [], { notify: silent });
         historyLoaded = true;
       });
     }).catch(function () {
@@ -252,18 +396,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function startChatPolling() {
     stopChatPolling();
-    if (document.hidden) return;
     pollTimer = setInterval(function () {
-      if (!siteChat || !siteChat.classList.contains('open') || document.hidden) {
-        stopChatPolling();
-        return;
-      }
       loadConversationHistory({ silent: true });
-    }, 7000);
+    }, 8000);
   }
 
   function openChat() {
     if (!siteChat || !chatPanel || !chatLauncher) return;
+    chatInteracted = true;
+    buildNotificationSettings();
+    resetUnreadCount();
+    ensureNotificationPermission();
     siteChat.classList.add('open');
     chatPanel.setAttribute('aria-hidden', 'false');
     chatLauncher.setAttribute('aria-expanded', 'true');
@@ -277,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function () {
     siteChat.classList.remove('open');
     chatPanel.setAttribute('aria-hidden', 'true');
     chatLauncher.setAttribute('aria-expanded', 'false');
-    stopChatPolling();
     chatLauncher.focus();
   }
 
@@ -287,6 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
     chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
   }
 
+  buildNotificationSettings();
   if (chatLauncher) chatLauncher.addEventListener('click', openChat);
   if (chatClose) chatClose.addEventListener('click', closeChat);
   if (chatInput) {
@@ -302,13 +445,21 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.key === 'Escape' && siteChat && siteChat.classList.contains('open')) closeChat();
   });
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) stopChatPolling();
-    else if (siteChat && siteChat.classList.contains('open')) startChatPolling();
+    if (!document.hidden && siteChat && siteChat.classList.contains('open')) resetUnreadCount();
+    if (!pollTimer && historyLoaded) startChatPolling();
+  });
+  window.addEventListener('focus', function () {
+    windowHasFocus = true;
+    if (siteChat && siteChat.classList.contains('open')) resetUnreadCount();
+  });
+  window.addEventListener('blur', function () {
+    windowHasFocus = false;
   });
 
   if (chatForm) {
     chatForm.addEventListener('submit', function (e) {
       e.preventDefault();
+      chatInteracted = true;
       var text = chatInput ? chatInput.value.trim() : '';
       if (!text) return;
       if (text.length > 1000) { showToast('الرسالة طويلة جدًا'); return; }
