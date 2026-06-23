@@ -8,7 +8,12 @@
   <meta name="robots" content="index, follow">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="icon" type="image/png" href="images/logo-mark.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,21 +26,26 @@
   <header class="header">
     <div class="container">
       <a href="index.html" class="logo">
-        <img src="images/logo.png" alt="مكتب الأمين" class="logo-img">
-        <span class="logo-text">مكتب الأمين</span>
+        <img src="images/logo-mark.png" alt="مكتب الأمين" class="logo-img">
+        <span class="logo-text">مكتب الأمين<small>لخدمات الزيارة والتأشيرات</small></span>
       </a>
 
-      <nav>
-        <ul class="nav-menu">
-          <li><a href="index.html#home">الرئيسية</a></li>
-          <li><a href="index.html#services">خدماتنا</a></li>
-          <li><a href="index.html#why-us">نمط عملنا</a></li>
-          <li><a href="index.html#reviews">آراء العملاء</a></li>
-          <li><a href="index.html#contact">تواصل معنا</a></li>
-        </ul>
-      </nav>
+      <div class="nav" id="nav">
+        <nav aria-label="القائمة الرئيسية">
+          <ul class="nav-menu">
+            <li><a href="index.html#home">الرئيسية</a></li>
+            <li><a href="index.html#services">خدماتنا</a></li>
+            <li><a href="index.html#how">كيف نعمل</a></li>
+            <li><a href="index.html#trust">الموثوقية</a></li>
+            <li><a href="index.html#contact">تواصل معنا</a></li>
+          </ul>
+        </nav>
+        <div class="nav-cta">
+          <a href="index.html#contact" class="btn btn-primary"><i class="fas fa-paper-plane"></i> ابدأ استفسارك</a>
+        </div>
+      </div>
 
-      <button class="mobile-menu-btn" aria-label="القائمة">
+      <button class="mobile-menu-btn" aria-label="فتح القائمة" aria-expanded="false" aria-controls="nav">
         <i class="fas fa-bars"></i>
       </button>
     </div>
@@ -105,8 +115,8 @@
       <div class="footer-content">
         <div class="footer-brand">
           <a href="index.html" class="logo">
-            <img src="images/logo.png" alt="مكتب الأمين" class="logo-img">
-            <span class="logo-text">مكتب الأمين</span>
+            <img src="images/logo-mark.png" alt="مكتب الأمين" class="logo-img">
+            <span class="logo-text">مكتب الأمين<small>لخدمات الزيارة والتأشيرات</small></span>
           </a>
           <p>نقدم خدمات سفر وتأشيرات لعملائنا في مصر</p>
         </div>
