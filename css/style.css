@@ -470,9 +470,10 @@ ul { list-style: none; }
   overscroll-behavior: contain;
 }
 .chat-message {
-  max-width: 88%; border-radius: 16px; padding: 0.78rem 0.94rem;
-  font-size: 0.94rem; line-height: 1.72; box-shadow: var(--shadow-sm);
-  overflow-wrap: anywhere; white-space: pre-wrap;
+  max-width: 90%; border-radius: 16px; padding: 0.78rem 0.94rem;
+  font-size: 0.94rem; line-height: 1.8; box-shadow: var(--shadow-sm);
+  overflow-wrap: break-word; word-break: normal; white-space: pre-wrap;
+  unicode-bidi: plaintext; text-align: right;
 }
 .chat-message.bot {
   align-self: flex-start; background: #fff; color: var(--text); border: 1px solid var(--border);

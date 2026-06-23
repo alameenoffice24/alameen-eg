@@ -138,6 +138,9 @@ document.addEventListener('DOMContentLoaded', function () {
   var chatSeenMessages = {};
   var historyLoaded = false;
   var pollTimer = null;
+  // Dynamic welcome menu fetched from the controller (same source as the AMEEN bot menu);
+  // greetingText above is the offline fallback if the fetch fails.
+  var welcomeMenuText = null;
 
   function makeVisitorId() {
     var rand = '';
@@ -188,7 +191,8 @@ document.addEventListener('DOMContentLoaded', function () {
     chatMessages.textContent = '';
     chatSeenMessages = {};
     if (!messages.length) {
-      addChatMessage(greetingText, 'bot', 'local:greeting');
+      addChatMessage(welcomeMenuText || greetingText, 'bot', 'local:greeting');
+      if (!welcomeMenuText) loadWelcomeMenu();
       return;
     }
     messages.forEach(function (item, index) {
@@ -197,6 +201,26 @@ document.addEventListener('DOMContentLoaded', function () {
       var type = item.direction === 'inbound' || item.sender_type === 'customer' ? 'user' : 'bot';
       if (item.sender_type === 'system' || item.sender_type === 'status') type = 'status';
       addChatMessage(text, type, messageKey(item, 'history:' + index));
+    });
+  }
+
+  var welcomeMenuLoading = false;
+  function loadWelcomeMenu() {
+    if (welcomeMenuText || welcomeMenuLoading) return Promise.resolve();
+    welcomeMenuLoading = true;
+    return fetch(chatApiBase.replace(/\/$/, '') + '/api/public/website-chat/menu', {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; });
+    }).then(function (data) {
+      if (data && data.ok && data.menu) {
+        welcomeMenuText = String(data.menu);
+        // If no real conversation has loaded yet, refresh so the greeting shows the live menu.
+        if (!historyLoaded) renderConversationMessages([]);
+      }
+    }).catch(function () { /* keep static fallback */ }).finally(function () {
+      welcomeMenuLoading = false;
     });
   }
 
@@ -243,6 +267,7 @@ document.addEventListener('DOMContentLoaded', function () {
     siteChat.classList.add('open');
     chatPanel.setAttribute('aria-hidden', 'false');
     chatLauncher.setAttribute('aria-expanded', 'true');
+    loadWelcomeMenu();
     loadConversationHistory({ silent: historyLoaded }).finally(startChatPolling);
     setTimeout(function () { if (chatInput) chatInput.focus(); }, 60);
   }
