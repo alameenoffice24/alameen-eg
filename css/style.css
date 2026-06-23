@@ -459,10 +459,10 @@ ul { list-style: none; }
 }
 .chat-panel {
   position: absolute; right: 0; bottom: 68px; width: min(520px, calc(100vw - 40px));
-  height: min(820px, 84vh); max-height: calc(100vh - 84px);
+  height: calc(100vh - 96px); max-height: calc(100vh - 96px);
   display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto;
   background: #fff; border: 2px solid var(--navy-800);
-  border-radius: var(--radius-lg); box-shadow: 0 24px 58px rgba(11, 31, 56, 0.24), 0 12px 30px rgba(212, 161, 42, 0.12); overflow: hidden;
+  border-radius: var(--radius-lg); box-shadow: 0 0 0 1px rgba(11, 31, 56, 0.08), 0 24px 58px rgba(11, 31, 56, 0.26), 0 12px 30px rgba(212, 161, 42, 0.12); overflow: hidden;
   opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.98);
   transition: opacity 0.28s cubic-bezier(0.22,0.61,0.36,1), transform 0.28s cubic-bezier(0.22,0.61,0.36,1), visibility 0.28s;
 }
@@ -471,17 +471,17 @@ ul { list-style: none; }
    as normal; height maximized to nearly fill the viewport. Anchored to the viewport
    so header stays at top and the input stays visible at the bottom. */
 .site-chat.expanded .chat-panel {
-  position: fixed; right: 24px; top: 12px; bottom: 12px; left: auto;
+  position: fixed; right: 24px; top: 4px; bottom: 4px; left: auto; z-index: 10;
   width: min(540px, calc(100vw - 40px));
-  height: auto; max-height: none;
+  height: auto; max-height: calc(100vh - 8px);
 }
 .chat-header {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;
-  padding: 0.85rem 1.05rem; background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  padding: 0.55rem 0.95rem; background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
   color: #fff; border-bottom: 3px solid var(--gold-500);
 }
-.chat-header h3 { color: #fff; font-size: 1.02rem; margin-bottom: 0.12rem; }
-.chat-header p { color: rgba(255,255,255,0.74); font-size: 0.8rem; margin-bottom: 0; line-height: 1.45; }
+.chat-header h3 { color: #fff; font-size: 1rem; margin-bottom: 0.08rem; line-height: 1.2; }
+.chat-header p { color: rgba(255,255,255,0.74); font-size: 0.76rem; margin-bottom: 0; line-height: 1.35; }
 .chat-header-actions { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
 .chat-close, .chat-expand {
   width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.18);
@@ -491,8 +491,8 @@ ul { list-style: none; }
 .chat-close:hover, .chat-expand:hover { background: rgba(255,255,255,0.16); }
 .chat-expand:focus-visible, .chat-close:focus-visible { outline: 2px solid var(--gold-400); outline-offset: 2px; }
 .chat-messages {
-  min-height: 0; overflow-y: auto; padding: 1rem; background: var(--bg-soft);
-  display: flex; flex-direction: column; gap: 0.7rem;
+  min-height: 0; overflow-y: auto; padding: 0.85rem; background: var(--bg-soft);
+  display: flex; flex-direction: column; gap: 0.6rem;
   overscroll-behavior: contain;
 }
 .chat-message {
@@ -514,11 +514,11 @@ ul { list-style: none; }
   padding: 0.45rem 0.7rem;
 }
 .chat-form {
-  display: grid; grid-template-columns: 1fr 46px; gap: 0.6rem; padding: 0.85rem;
+  display: grid; grid-template-columns: 1fr 44px; gap: 0.55rem; padding: 0.6rem 0.7rem;
   background: #fff; border-top: 1px solid var(--border);
 }
 .chat-form textarea {
-  min-height: 46px; max-height: 132px; resize: none; border: 1px solid var(--border);
+  min-height: 44px; max-height: 120px; resize: none; border: 1px solid var(--border);
   border-radius: 14px; padding: 0.62rem 0.85rem; font-family: inherit; font-size: 0.94rem;
   background: var(--bg-soft); transition: var(--transition);
 }
@@ -531,18 +531,18 @@ ul { list-style: none; }
   outline-offset: 2px;
 }
 .chat-form button {
-  width: 46px; height: 46px; border: none; border-radius: 14px; cursor: pointer;
+  width: 44px; height: 44px; border: none; border-radius: 14px; cursor: pointer;
   color: #1c1402; background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
   display: flex; align-items: center; justify-content: center; transition: var(--transition);
 }
 .chat-form button:hover { transform: translateY(-1px); }
 .chat-form button:disabled { opacity: 0.55; cursor: wait; transform: none; }
 .chat-settings {
-  padding: 0.7rem 1rem 0; background: #fff; border-top: 1px solid rgba(227, 233, 241, 0.74);
+  padding: 0.45rem 0.9rem 0; background: #fff; border-top: 1px solid rgba(227, 233, 241, 0.74);
 }
 .chat-settings label {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  color: var(--text-muted); font-size: 0.78rem; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  color: var(--text-muted); font-size: 0.74rem; font-weight: 700; cursor: pointer;
 }
 .chat-settings input {
   width: 16px; height: 16px; accent-color: var(--gold-500); cursor: pointer;
@@ -551,8 +551,8 @@ ul { list-style: none; }
   outline: 2px solid rgba(212, 161, 42, 0.86); outline-offset: 2px;
 }
 .chat-privacy {
-  padding: 0 1rem 0.6rem; background: #fff; color: var(--text-muted);
-  font-size: 0.72rem; line-height: 1.45; margin-bottom: 0;
+  padding: 0.1rem 0.9rem 0.45rem; background: #fff; color: var(--text-muted);
+  font-size: 0.7rem; line-height: 1.4; margin-bottom: 0;
 }
 .chat-privacy a { color: var(--navy-700); font-weight: 700; }
 
@@ -662,11 +662,11 @@ ul { list-style: none; }
   .whatsapp-float { width: 52px; height: 52px; font-size: 1.5rem; bottom: 18px; left: 18px; }
   .site-chat { right: 14px; bottom: 18px; }
   .chat-launcher { height: 50px; padding-inline: 0.95rem 1.05rem; font-size: 0.88rem; }
-  .chat-panel { right: 0; bottom: 64px; width: calc(100vw - 20px); height: min(720px, 90vh); max-height: calc(100vh - 78px); }
+  .chat-panel { right: 0; bottom: 60px; width: calc(100vw - 16px); height: calc(100vh - 84px); max-height: calc(100vh - 84px); }
   /* Expanded on mobile = near full-height modal anchored to the viewport. */
   .site-chat.expanded .chat-panel {
-    position: fixed; top: 8px; bottom: 8px; left: 8px; right: 8px;
-    width: auto; height: auto; max-height: none; border-radius: 18px;
+    position: fixed; top: 4px; bottom: 4px; left: 6px; right: 6px; z-index: 10;
+    width: auto; height: auto; max-height: calc(100vh - 8px); border-radius: 18px;
   }
   .chat-message { max-width: 92%; font-size: 0.9rem; line-height: 1.7; }
 }
