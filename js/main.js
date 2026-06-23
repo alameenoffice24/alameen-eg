@@ -123,4 +123,127 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     revealEls.forEach(function (el) { observer.observe(el); });
   }
+
+  // ---- Website chat widget ----
+  var siteChat = document.querySelector('.site-chat');
+  var chatLauncher = document.querySelector('.chat-launcher');
+  var chatPanel = document.querySelector('.chat-panel');
+  var chatClose = document.querySelector('.chat-close');
+  var chatForm = document.querySelector('.chat-form');
+  var chatInput = document.getElementById('chat-message-input');
+  var chatMessages = document.querySelector('.chat-messages');
+  var chatApiBase = window.ALAMEEN_CHAT_API_BASE || 'https://agency-booking.alameen-eg.xyz';
+  var visitorKey = 'alameen_website_chat_visitor_id';
+
+  function makeVisitorId() {
+    var rand = '';
+    if (window.crypto && window.crypto.getRandomValues) {
+      var bytes = new Uint8Array(12);
+      window.crypto.getRandomValues(bytes);
+      rand = Array.prototype.map.call(bytes, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+    } else {
+      rand = String(Date.now()) + String(Math.random()).slice(2);
+    }
+    return 'web_' + rand.slice(0, 24);
+  }
+
+  function getVisitorId() {
+    try {
+      var existing = localStorage.getItem(visitorKey);
+      if (/^[A-Za-z0-9_-]{8,80}$/.test(existing || '')) return existing;
+      var next = makeVisitorId();
+      localStorage.setItem(visitorKey, next);
+      return next;
+    } catch (_) {
+      return makeVisitorId();
+    }
+  }
+
+  function addChatMessage(text, type) {
+    if (!chatMessages) return null;
+    var msg = document.createElement('div');
+    msg.className = 'chat-message ' + (type || 'bot');
+    msg.textContent = text;
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return msg;
+  }
+
+  function openChat() {
+    if (!siteChat || !chatPanel || !chatLauncher) return;
+    siteChat.classList.add('open');
+    chatPanel.setAttribute('aria-hidden', 'false');
+    chatLauncher.setAttribute('aria-expanded', 'true');
+    setTimeout(function () { if (chatInput) chatInput.focus(); }, 60);
+  }
+
+  function closeChat() {
+    if (!siteChat || !chatPanel || !chatLauncher) return;
+    siteChat.classList.remove('open');
+    chatPanel.setAttribute('aria-hidden', 'true');
+    chatLauncher.setAttribute('aria-expanded', 'false');
+    chatLauncher.focus();
+  }
+
+  function autosizeChatInput() {
+    if (!chatInput) return;
+    chatInput.style.height = 'auto';
+    chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+  }
+
+  if (chatLauncher) chatLauncher.addEventListener('click', openChat);
+  if (chatClose) chatClose.addEventListener('click', closeChat);
+  if (chatInput) {
+    chatInput.addEventListener('input', autosizeChatInput);
+    chatInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (chatForm) chatForm.requestSubmit();
+      }
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && siteChat && siteChat.classList.contains('open')) closeChat();
+  });
+
+  if (chatForm) {
+    chatForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var text = chatInput ? chatInput.value.trim() : '';
+      if (!text) return;
+      if (text.length > 1000) { showToast('الرسالة طويلة جدًا'); return; }
+      addChatMessage(text, 'user');
+      chatInput.value = '';
+      autosizeChatInput();
+      var status = addChatMessage('جاري إرسال رسالتك...', 'status');
+      var btn = chatForm.querySelector('button');
+      if (btn) btn.disabled = true;
+      fetch(chatApiBase.replace(/\/$/, '') + '/api/public/website-chat/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          visitor_id: getVisitorId(),
+          message: text,
+          page_url: window.location.href
+        })
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; }).then(function (data) {
+          if (!res.ok || data.ok === false) throw new Error(data.error || 'SEND_FAILED');
+          return data;
+        });
+      }).then(function (data) {
+        if (status) status.remove();
+        addChatMessage(data.reply || 'استلمنا رسالتك، وسيتم تحويلها للمتابعة من أحد أفراد الفريق في أقرب وقت.', 'bot');
+        if (data.visitor_id) {
+          try { localStorage.setItem(visitorKey, data.visitor_id); } catch (_) {}
+        }
+      }).catch(function () {
+        if (status) status.remove();
+        addChatMessage('تعذّر إرسال الرسالة الآن. يمكنك استخدام ماسنجر أو رقم خدمة العملاء لحين عودة الخدمة.', 'bot');
+      }).finally(function () {
+        if (btn) btn.disabled = false;
+        if (chatInput) chatInput.focus();
+      });
+    });
+  }
 });

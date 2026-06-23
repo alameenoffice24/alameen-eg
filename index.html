@@ -344,6 +344,32 @@
   <!-- Floating WhatsApp -->
   <button class="whatsapp-float js-whatsapp-trigger" aria-label="واتساب"><i class="fab fa-whatsapp"></i></button>
 
+  <!-- Website Chat Widget -->
+  <section class="site-chat" aria-label="محادثة مكتب الأمين">
+    <button class="chat-launcher" type="button" aria-expanded="false" aria-controls="site-chat-panel" aria-label="فتح محادثة مكتب الأمين">
+      <i class="fas fa-comments"></i>
+      <span>اسألنا</span>
+    </button>
+    <div class="chat-panel" id="site-chat-panel" aria-hidden="true">
+      <div class="chat-header">
+        <div>
+          <h3>مساعد مكتب الأمين</h3>
+          <p>اسأل عن الطيران، التأشيرات، المتابعة والخدمات</p>
+        </div>
+        <button class="chat-close" type="button" aria-label="إغلاق المحادثة"><i class="fas fa-xmark"></i></button>
+      </div>
+      <div class="chat-messages" role="log" aria-live="polite" aria-relevant="additions">
+        <div class="chat-message bot">أهلًا بك في مكتب الأمين. اكتب استفسارك وسنساعدك في المتابعة.</div>
+      </div>
+      <form class="chat-form">
+        <label class="sr-only" for="chat-message-input">اكتب رسالتك</label>
+        <textarea id="chat-message-input" name="message" rows="1" maxlength="1000" placeholder="اكتب رسالتك هنا..." required></textarea>
+        <button type="submit" aria-label="إرسال الرسالة"><i class="fas fa-paper-plane"></i></button>
+      </form>
+      <p class="chat-privacy">باستخدام المحادثة فأنت توافق على <a href="privacy-policy.html">سياسة الخصوصية</a>.</p>
+    </div>
+  </section>
+
   <!-- WhatsApp Modal -->
   <div class="modal-overlay">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wa-modal-title">
