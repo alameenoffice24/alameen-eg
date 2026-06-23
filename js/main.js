@@ -129,6 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var chatLauncher = document.querySelector('.chat-launcher');
   var chatPanel = document.querySelector('.chat-panel');
   var chatClose = document.querySelector('.chat-close');
+  var chatExpand = document.querySelector('.chat-expand');
+  var expandedKey = 'alameen_website_chat_expanded';
   var chatForm = document.querySelector('.chat-form');
   var chatInput = document.getElementById('chat-message-input');
   var chatMessages = document.querySelector('.chat-messages');
@@ -401,6 +403,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 8000);
   }
 
+  function scrollChatToBottom() {
+    if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function setChatExpanded(expanded, persist) {
+    if (!siteChat || !chatExpand) return;
+    siteChat.classList.toggle('expanded', expanded);
+    chatExpand.setAttribute('aria-pressed', expanded ? 'true' : 'false');
+    chatExpand.setAttribute('aria-label', expanded ? 'تصغير نافذة المحادثة' : 'تكبير نافذة المحادثة');
+    chatExpand.setAttribute('title', expanded ? 'تصغير' : 'تكبير');
+    var icon = chatExpand.querySelector('i');
+    if (icon) { icon.classList.toggle('fa-expand', !expanded); icon.classList.toggle('fa-compress', expanded); }
+    if (persist) { try { localStorage.setItem(expandedKey, expanded ? '1' : '0'); } catch (_) {} }
+    // Size changed — keep the latest message in view.
+    setTimeout(scrollChatToBottom, 60);
+  }
+
+  function getStoredExpanded() {
+    try { return localStorage.getItem(expandedKey) === '1'; } catch (_) { return false; }
+  }
+
   function openChat() {
     if (!siteChat || !chatPanel || !chatLauncher) return;
     chatInteracted = true;
@@ -408,6 +431,7 @@ document.addEventListener('DOMContentLoaded', function () {
     resetUnreadCount();
     ensureNotificationPermission();
     siteChat.classList.add('open');
+    setChatExpanded(getStoredExpanded(), false);
     chatPanel.setAttribute('aria-hidden', 'false');
     chatLauncher.setAttribute('aria-expanded', 'true');
     loadWelcomeMenu();
@@ -432,6 +456,10 @@ document.addEventListener('DOMContentLoaded', function () {
   buildNotificationSettings();
   if (chatLauncher) chatLauncher.addEventListener('click', openChat);
   if (chatClose) chatClose.addEventListener('click', closeChat);
+  if (chatExpand) chatExpand.addEventListener('click', function () {
+    setChatExpanded(!siteChat.classList.contains('expanded'), true);
+    chatExpand.focus();
+  });
   if (chatInput) {
     chatInput.addEventListener('input', autosizeChatInput);
     chatInput.addEventListener('keydown', function (e) {
