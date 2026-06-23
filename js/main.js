@@ -134,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var chatMessages = document.querySelector('.chat-messages');
   var chatApiBase = window.ALAMEEN_CHAT_API_BASE || 'https://agency-booking.alameen-eg.xyz';
   var visitorKey = 'alameen_website_chat_visitor_id';
-  var greetingText = 'أهلًا بك في مكتب الأمين. اكتب استفسارك وسنساعدك في المتابعة.';
+  var greetingText = 'أهلاً بيك في مكتب الأمين ✈️\n\nاختار رقم الخدمة 👇\n\n1- ✈️ حجز / تعديل طيران\n2- 📋 تأشيرات\n3- 🇸🇦 زيارة عائلية للسعودية\n4- 🚄 قطار الحرمين\n5- 🔲 باركود تأشيرات السعودية\n6- 🔒 موافقات / خطابات ضمان\n7- 📁 تساهيل / إنجاز\n8- ℹ️ استفسار عام\n9- ⭕ طلب خارج القائمة\n\n──────────────\n99- ❌ إنهاء المحادثة\n#- 👤 التواصل مع موظف\n\nأو اكتب استفسارك مباشرةً وهنساعدك. ✍️';
   var chatSeenMessages = {};
   var historyLoaded = false;
   var pollTimer = null;
