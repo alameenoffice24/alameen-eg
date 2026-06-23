@@ -459,7 +459,7 @@ ul { list-style: none; }
 }
 .chat-panel {
   position: absolute; right: 0; bottom: 68px; width: min(520px, calc(100vw - 40px));
-  height: min(760px, 82vh); max-height: calc(100vh - 96px);
+  height: min(820px, 84vh); max-height: calc(100vh - 84px);
   display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto;
   background: #fff; border: 2px solid var(--navy-800);
   border-radius: var(--radius-lg); box-shadow: 0 24px 58px rgba(11, 31, 56, 0.24), 0 12px 30px rgba(212, 161, 42, 0.12); overflow: hidden;
@@ -467,11 +467,13 @@ ul { list-style: none; }
   transition: opacity 0.28s cubic-bezier(0.22,0.61,0.36,1), transform 0.28s cubic-bezier(0.22,0.61,0.36,1), visibility 0.28s;
 }
 .site-chat.open .chat-panel { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-/* Expanded desktop mode — much larger reading area, still bottom-right anchored. */
+/* Expanded desktop mode — a TALL right-side support panel (not wider). Same width
+   as normal; height maximized to nearly fill the viewport. Anchored to the viewport
+   so header stays at top and the input stays visible at the bottom. */
 .site-chat.expanded .chat-panel {
-  width: min(780px, calc(100vw - 48px));
-  height: min(900px, 88vh); max-height: calc(100vh - 64px);
-  bottom: 24px;
+  position: fixed; right: 24px; top: 12px; bottom: 12px; left: auto;
+  width: min(540px, calc(100vw - 40px));
+  height: auto; max-height: none;
 }
 .chat-header {
   display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem;
@@ -661,9 +663,9 @@ ul { list-style: none; }
   .site-chat { right: 14px; bottom: 18px; }
   .chat-launcher { height: 50px; padding-inline: 0.95rem 1.05rem; font-size: 0.88rem; }
   .chat-panel { right: 0; bottom: 64px; width: calc(100vw - 20px); height: min(720px, 90vh); max-height: calc(100vh - 78px); }
-  /* Expanded on mobile = near full-screen modal anchored to the viewport. */
+  /* Expanded on mobile = near full-height modal anchored to the viewport. */
   .site-chat.expanded .chat-panel {
-    position: fixed; inset: 10px; right: 10px; bottom: 10px;
+    position: fixed; top: 8px; bottom: 8px; left: 8px; right: 8px;
     width: auto; height: auto; max-height: none; border-radius: 18px;
   }
   .chat-message { max-width: 92%; font-size: 0.9rem; line-height: 1.7; }
