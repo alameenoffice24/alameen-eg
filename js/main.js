@@ -134,6 +134,10 @@ document.addEventListener('DOMContentLoaded', function () {
   var chatMessages = document.querySelector('.chat-messages');
   var chatApiBase = window.ALAMEEN_CHAT_API_BASE || 'https://agency-booking.alameen-eg.xyz';
   var visitorKey = 'alameen_website_chat_visitor_id';
+  var greetingText = 'أهلًا بك في مكتب الأمين. اكتب استفسارك وسنساعدك في المتابعة.';
+  var chatSeenMessages = {};
+  var historyLoaded = false;
+  var pollTimer = null;
 
   function makeVisitorId() {
     var rand = '';
@@ -159,14 +163,79 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function addChatMessage(text, type) {
+  function messageKey(item, fallbackPrefix) {
+    if (item && item.id) return String(item.id);
+    if (item && item.channel_message_id) return String(item.channel_message_id);
+    return String(fallbackPrefix || 'msg') + ':' + String(item && item.created_at || '') + ':' + String(item && item.text || '');
+  }
+
+  function addChatMessage(text, type, key) {
     if (!chatMessages) return null;
+    var normalizedKey = key ? String(key) : '';
+    if (normalizedKey && chatSeenMessages[normalizedKey]) return null;
+    if (normalizedKey) chatSeenMessages[normalizedKey] = true;
     var msg = document.createElement('div');
     msg.className = 'chat-message ' + (type || 'bot');
     msg.textContent = text;
+    if (normalizedKey) msg.setAttribute('data-message-id', normalizedKey);
     chatMessages.appendChild(msg);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return msg;
+  }
+
+  function renderConversationMessages(messages) {
+    if (!chatMessages || !Array.isArray(messages)) return;
+    chatMessages.textContent = '';
+    chatSeenMessages = {};
+    if (!messages.length) {
+      addChatMessage(greetingText, 'bot', 'local:greeting');
+      return;
+    }
+    messages.forEach(function (item, index) {
+      var text = item && item.text ? String(item.text) : '';
+      if (!text) return;
+      var type = item.direction === 'inbound' || item.sender_type === 'customer' ? 'user' : 'bot';
+      if (item.sender_type === 'system' || item.sender_type === 'status') type = 'status';
+      addChatMessage(text, type, messageKey(item, 'history:' + index));
+    });
+  }
+
+  function loadConversationHistory(options) {
+    if (!chatMessages) return Promise.resolve();
+    var silent = options && options.silent;
+    if (!silent && !historyLoaded) {
+      renderConversationMessages([]);
+      addChatMessage('جاري تحميل المحادثة...', 'status', 'local:loading-history');
+    }
+    return fetch(chatApiBase.replace(/\/$/, '') + '/api/public/website-chat/conversation?visitor_id=' + encodeURIComponent(getVisitorId()), {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        if (!res.ok || data.ok === false) throw new Error(data.error || 'LOAD_FAILED');
+        renderConversationMessages(data.messages || []);
+        historyLoaded = true;
+      });
+    }).catch(function () {
+      if (!historyLoaded && !silent) renderConversationMessages([]);
+    });
+  }
+
+  function stopChatPolling() {
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = null;
+  }
+
+  function startChatPolling() {
+    stopChatPolling();
+    if (document.hidden) return;
+    pollTimer = setInterval(function () {
+      if (!siteChat || !siteChat.classList.contains('open') || document.hidden) {
+        stopChatPolling();
+        return;
+      }
+      loadConversationHistory({ silent: true });
+    }, 7000);
   }
 
   function openChat() {
@@ -174,6 +243,7 @@ document.addEventListener('DOMContentLoaded', function () {
     siteChat.classList.add('open');
     chatPanel.setAttribute('aria-hidden', 'false');
     chatLauncher.setAttribute('aria-expanded', 'true');
+    loadConversationHistory({ silent: historyLoaded }).finally(startChatPolling);
     setTimeout(function () { if (chatInput) chatInput.focus(); }, 60);
   }
 
@@ -182,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
     siteChat.classList.remove('open');
     chatPanel.setAttribute('aria-hidden', 'true');
     chatLauncher.setAttribute('aria-expanded', 'false');
+    stopChatPolling();
     chatLauncher.focus();
   }
 
@@ -205,6 +276,10 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && siteChat && siteChat.classList.contains('open')) closeChat();
   });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stopChatPolling();
+    else if (siteChat && siteChat.classList.contains('open')) startChatPolling();
+  });
 
   if (chatForm) {
     chatForm.addEventListener('submit', function (e) {
@@ -212,10 +287,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var text = chatInput ? chatInput.value.trim() : '';
       if (!text) return;
       if (text.length > 1000) { showToast('الرسالة طويلة جدًا'); return; }
-      addChatMessage(text, 'user');
+      var localKey = 'local:user:' + Date.now();
+      addChatMessage(text, 'user', localKey);
       chatInput.value = '';
       autosizeChatInput();
-      var status = addChatMessage('جاري إرسال رسالتك...', 'status');
+      var status = addChatMessage('جاري إرسال رسالتك...', 'status', 'local:status:' + Date.now());
       var btn = chatForm.querySelector('button');
       if (btn) btn.disabled = true;
       fetch(chatApiBase.replace(/\/$/, '') + '/api/public/website-chat/message', {
@@ -233,13 +309,14 @@ document.addEventListener('DOMContentLoaded', function () {
         });
       }).then(function (data) {
         if (status) status.remove();
-        addChatMessage(data.reply || 'استلمنا رسالتك، وسيتم تحويلها للمتابعة من أحد أفراد الفريق في أقرب وقت.', 'bot');
+        addChatMessage(data.reply || 'استلمنا رسالتك، وسيتم تحويلها للمتابعة من أحد أفراد الفريق في أقرب وقت.', 'bot', 'reply:' + (data.conversation_id || '') + ':' + Date.now());
         if (data.visitor_id) {
           try { localStorage.setItem(visitorKey, data.visitor_id); } catch (_) {}
         }
+        loadConversationHistory({ silent: true });
       }).catch(function () {
         if (status) status.remove();
-        addChatMessage('تعذّر إرسال الرسالة الآن. يمكنك استخدام ماسنجر أو رقم خدمة العملاء لحين عودة الخدمة.', 'bot');
+        addChatMessage('تعذّر إرسال الرسالة الآن. يمكنك استخدام ماسنجر أو رقم خدمة العملاء لحين عودة الخدمة.', 'bot', 'local:error:' + Date.now());
       }).finally(function () {
         if (btn) btn.disabled = false;
         if (chatInput) chatInput.focus();
