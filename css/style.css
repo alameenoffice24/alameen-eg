@@ -527,8 +527,14 @@ ul { list-style: none; }
 .chat-form textarea {
   min-height: 44px; max-height: 120px; resize: none; border: 1px solid var(--border);
   border-radius: 14px; padding: 0.62rem 0.85rem; font-family: inherit; font-size: 0.94rem;
-  background: var(--bg-soft); transition: var(--transition);
+  line-height: 1.45; background: var(--bg-soft); transition: var(--transition);
+  overflow-y: auto; overscroll-behavior: contain;
 }
+/* No scroll arrows/track for a normal one-line message; scrollbar appears only past max-height */
+.chat-form textarea { scrollbar-width: thin; }
+.chat-form textarea::-webkit-scrollbar { width: 6px; }
+.chat-form textarea::-webkit-scrollbar-thumb { background: rgba(15, 44, 77, 0.22); border-radius: 6px; }
+.chat-form textarea::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
 .chat-form textarea:focus {
   outline: none; border-color: var(--navy-700); background: #fff;
   box-shadow: 0 0 0 3px rgba(11, 31, 56, 0.14), 0 0 0 5px rgba(212, 161, 42, 0.20);
