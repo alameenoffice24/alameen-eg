@@ -520,6 +520,15 @@ ul { list-style: none; }
     0 1px 2px rgba(16, 36, 64, 0.045),
     0 10px 26px rgba(16, 36, 64, 0.07);
 }
+.chat-message.bot.result-group {
+  max-width: 94%;
+  background: linear-gradient(180deg, #fffdf8 0%, #faf6ec 100%);
+  border-color: rgba(185, 136, 29, 0.26);
+  box-shadow:
+    inset -4px 0 0 0 rgba(212, 161, 42, 0.58),
+    0 1px 2px rgba(16, 36, 64, 0.05),
+    0 14px 32px rgba(16, 36, 64, 0.10);
+}
 .chat-message.user {
   align-self: flex-end; background: var(--navy-800); color: #fff; border-bottom-right-radius: 6px;
   box-shadow:
@@ -531,6 +540,16 @@ ul { list-style: none; }
   border: 1px solid rgba(212, 161, 42, 0.26); font-weight: 700; font-size: 0.82rem;
   padding: 0.45rem 0.7rem;
 }
+.chat-new-messages {
+  position: absolute; left: 50%; bottom: 82px; transform: translateX(-50%);
+  z-index: 4; border: 1px solid rgba(185, 136, 29, 0.45);
+  border-radius: var(--radius-pill); padding: 0.45rem 0.9rem;
+  background: linear-gradient(135deg, var(--gold-400), var(--gold-500));
+  color: #1c1402; font-family: inherit; font-size: 0.78rem; font-weight: 900;
+  cursor: pointer; box-shadow: 0 10px 24px rgba(11, 31, 56, 0.18);
+}
+.chat-new-messages[hidden] { display: none; }
+.chat-new-messages:hover { transform: translateX(-50%) translateY(-1px); }
 .chat-form {
   display: grid; grid-template-columns: 1fr 44px; gap: 0.55rem; padding: 0.5rem 0.7rem;
   background: #fff; border-top: 1px solid var(--border);
@@ -539,8 +558,10 @@ ul { list-style: none; }
   min-height: 44px; max-height: 120px; resize: none; border: 1px solid var(--border);
   border-radius: 14px; padding: 0.62rem 0.85rem; font-family: inherit; font-size: 0.94rem;
   line-height: 1.45; background: var(--bg-soft); transition: var(--transition);
-  overflow-y: auto; overscroll-behavior: contain;
+  overflow-y: hidden; overscroll-behavior: contain;
 }
+/* JS expands the textarea up to 120px; only then allow a subtle vertical scroll. */
+.chat-form textarea[style*="120px"] { overflow-y: auto; }
 /* No scroll arrows/track for a normal one-line message; scrollbar appears only past max-height */
 .chat-form textarea { scrollbar-width: thin; }
 .chat-form textarea::-webkit-scrollbar { width: 6px; }

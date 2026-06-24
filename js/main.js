@@ -146,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var windowHasFocus = document.hasFocus();
   var notificationPermissionAsked = false;
   var soundToggle = null;
+  var newMessagesButton = null;
   var soundEnabled = false;
   var audioContext = null;
   var chatInteracted = false;
@@ -278,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function trackIncomingMessages(messages, options) {
-    if (!Array.isArray(messages)) return;
+    if (!Array.isArray(messages)) return [];
     var notify = options && options.notify;
     var incoming = [];
     messages.forEach(function (item, index) {
@@ -291,6 +292,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
     notifyIncomingBatch(incoming);
+    return incoming;
   }
 
   // Notifications/sound are automatic now — no visible toggle row. Sound is enabled
@@ -316,37 +318,118 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (_) {}
   }
 
-  function addChatMessage(text, type, key) {
+  function isChatNearBottom(threshold) {
+    if (!chatMessages) return true;
+    var limit = typeof threshold === 'number' ? threshold : 90;
+    return chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight <= limit;
+  }
+
+  function ensureNewMessagesButton() {
+    if (newMessagesButton || !chatPanel) return newMessagesButton;
+    newMessagesButton = document.createElement('button');
+    newMessagesButton.type = 'button';
+    newMessagesButton.className = 'chat-new-messages';
+    newMessagesButton.textContent = 'رسائل جديدة';
+    newMessagesButton.hidden = true;
+    newMessagesButton.addEventListener('click', function () {
+      hideNewMessagesButton();
+      scrollChatToBottom();
+    });
+    chatPanel.appendChild(newMessagesButton);
+    return newMessagesButton;
+  }
+
+  function showNewMessagesButton() {
+    var btn = ensureNewMessagesButton();
+    if (btn) btn.hidden = false;
+  }
+
+  function hideNewMessagesButton() {
+    if (newMessagesButton) newMessagesButton.hidden = true;
+  }
+
+  function flightResultGroupKey(item) {
+    if (!item || String(item.direction || '').toLowerCase() === 'inbound') return '';
+    var source = String(item.source || '').toLowerCase();
+    var id = String(item.channel_message_id || item.id || '');
+    if (source.indexOf('flight_results') === -1 && id.indexOf('flight_results') === -1) return '';
+    var match = id.match(/^(flight_results[^:]*:[^:]+):\d+$/);
+    return match ? match[1] : '';
+  }
+
+  function groupedConversationMessages(messages) {
+    var grouped = [];
+    var byKey = {};
+    (messages || []).forEach(function (item, index) {
+      var text = item && item.text ? String(item.text) : '';
+      if (!text) return;
+      var groupKey = flightResultGroupKey(item);
+      if (groupKey) {
+        var existing = byKey[groupKey];
+        if (existing) {
+          existing.text += '\n\n' + text;
+          existing._message_keys.push(messageKey(item, 'history:' + index));
+          existing._is_result_group = true;
+          return;
+        }
+        var copy = Object.assign({}, item, {
+          text: text,
+          channel_message_id: groupKey,
+          _message_keys: [messageKey(item, 'history:' + index)],
+          _is_result_group: true
+        });
+        byKey[groupKey] = copy;
+        grouped.push(copy);
+        return;
+      }
+      grouped.push(item);
+    });
+    return grouped;
+  }
+
+  function addChatMessage(text, type, key, extraClass) {
     if (!chatMessages) return null;
     var normalizedKey = key ? String(key) : '';
     if (normalizedKey && chatSeenMessages[normalizedKey]) return null;
     if (normalizedKey) chatSeenMessages[normalizedKey] = true;
     var msg = document.createElement('div');
     msg.className = 'chat-message ' + (type || 'bot');
+    if (extraClass) msg.className += ' ' + extraClass;
     msg.textContent = text;
     if (normalizedKey) msg.setAttribute('data-message-id', normalizedKey);
     chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
     return msg;
   }
 
   function renderConversationMessages(messages, options) {
     if (!chatMessages || !Array.isArray(messages)) return;
-    trackIncomingMessages(messages, { notify: options && options.notify });
+    var wasNearBottom = isChatNearBottom();
+    var previousScrollTop = chatMessages.scrollTop;
+    var incoming = trackIncomingMessages(messages, { notify: options && options.notify });
+    var shouldScroll = (options && options.forceScroll) || !historyLoaded || wasNearBottom;
     chatMessages.textContent = '';
     chatSeenMessages = {};
-    if (!messages.length) {
+    var displayMessages = groupedConversationMessages(messages);
+    if (!displayMessages.length) {
       addChatMessage(welcomeMenuText || greetingText, 'bot', 'local:greeting');
       if (!welcomeMenuText) loadWelcomeMenu();
+      scrollChatToBottom();
       return;
     }
-    messages.forEach(function (item, index) {
+    displayMessages.forEach(function (item, index) {
       var text = item && item.text ? String(item.text) : '';
       if (!text) return;
       var type = item.direction === 'inbound' || item.sender_type === 'customer' ? 'user' : 'bot';
       if (item.sender_type === 'system' || item.sender_type === 'status') type = 'status';
-      addChatMessage(text, type, messageKey(item, 'history:' + index));
+      addChatMessage(text, type, messageKey(item, 'history:' + index), item._is_result_group ? 'result-group' : '');
     });
+    if (shouldScroll) {
+      scrollChatToBottom();
+      hideNewMessagesButton();
+    } else {
+      chatMessages.scrollTop = previousScrollTop;
+      if (incoming.length) showNewMessagesButton();
+    }
   }
 
   var welcomeMenuLoading = false;
@@ -382,7 +465,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).then(function (res) {
       return res.json().catch(function () { return {}; }).then(function (data) {
         if (!res.ok || data.ok === false) throw new Error(data.error || 'LOAD_FAILED');
-        renderConversationMessages(data.messages || [], { notify: silent });
+        renderConversationMessages(data.messages || [], { notify: silent, forceScroll: options && options.forceScroll });
         historyLoaded = true;
       });
     }).catch(function () {
@@ -404,6 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function scrollChatToBottom() {
     if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+    hideNewMessagesButton();
   }
 
   function setChatExpanded(expanded, persist) {
@@ -435,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
     chatPanel.setAttribute('aria-hidden', 'false');
     chatLauncher.setAttribute('aria-expanded', 'true');
     loadWelcomeMenu();
-    loadConversationHistory({ silent: historyLoaded }).finally(startChatPolling);
+    loadConversationHistory({ silent: historyLoaded, forceScroll: true }).finally(startChatPolling);
     setTimeout(function () { if (chatInput) chatInput.focus(); }, 60);
   }
 
@@ -469,6 +553,11 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+  if (chatMessages) {
+    chatMessages.addEventListener('scroll', function () {
+      if (isChatNearBottom()) hideNewMessagesButton();
+    }, { passive: true });
+  }
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && siteChat && siteChat.classList.contains('open')) closeChat();
   });
@@ -493,9 +582,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (text.length > 1000) { showToast('الرسالة طويلة جدًا'); return; }
       var localKey = 'local:user:' + Date.now();
       addChatMessage(text, 'user', localKey);
+      scrollChatToBottom();
       chatInput.value = '';
       autosizeChatInput();
       var status = addChatMessage('جاري إرسال رسالتك...', 'status', 'local:status:' + Date.now());
+      scrollChatToBottom();
       var btn = chatForm.querySelector('button');
       if (btn) btn.disabled = true;
       fetch(chatApiBase.replace(/\/$/, '') + '/api/public/website-chat/message', {
@@ -514,13 +605,15 @@ document.addEventListener('DOMContentLoaded', function () {
       }).then(function (data) {
         if (status) status.remove();
         addChatMessage(data.reply || 'استلمنا رسالتك، وسيتم تحويلها للمتابعة من أحد أفراد الفريق في أقرب وقت.', 'bot', 'reply:' + (data.conversation_id || '') + ':' + Date.now());
+        scrollChatToBottom();
         if (data.visitor_id) {
           try { localStorage.setItem(visitorKey, data.visitor_id); } catch (_) {}
         }
-        loadConversationHistory({ silent: true });
+        loadConversationHistory({ silent: true, forceScroll: true });
       }).catch(function () {
         if (status) status.remove();
         addChatMessage('تعذّر إرسال الرسالة الآن. يمكنك استخدام ماسنجر أو رقم خدمة العملاء لحين عودة الخدمة.', 'bot', 'local:error:' + Date.now());
+        scrollChatToBottom();
       }).finally(function () {
         if (btn) btn.disabled = false;
         if (chatInput) chatInput.focus();
