@@ -37,11 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function openModal() { if (modalOverlay) modalOverlay.classList.add('active'); }
   function closeModal() { if (modalOverlay) modalOverlay.classList.remove('active'); }
 
-  whatsappTriggers.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      window.open('https://wa.me/+201011212424', '_blank', 'noopener');
-    });
-  });
+  whatsappTriggers.forEach(function (btn) { btn.addEventListener('click', openModal); });
 
   if (modalOverlay) {
     if (modalClose) modalClose.addEventListener('click', closeModal);
