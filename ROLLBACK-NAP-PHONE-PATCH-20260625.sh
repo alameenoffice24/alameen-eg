@@ -5,13 +5,15 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 BK="backups/NAP-PHONE-PATCH-20260625_082411"
 
-if [ ! -f "$BK/index.html" ] || [ ! -f "$BK/js/main.js" ]; then
-  echo "ERROR: backup not found at $BK" >&2; exit 1
-fi
+for f in index.html js/main.js terms.html privacy-policy.html; do
+  if [ ! -f "$BK/$f" ]; then echo "ERROR: backup missing $BK/$f" >&2; exit 1; fi
+done
 
 cp "$BK/index.html" index.html
 cp "$BK/js/main.js" js/main.js
-echo "Restored index.html + js/main.js from $BK"
+cp "$BK/terms.html" terms.html
+cp "$BK/privacy-policy.html" privacy-policy.html
+echo "Restored index.html + js/main.js + terms.html + privacy-policy.html from $BK"
 
 echo "Verify:"; grep -n "telephone" index.html | head -1; grep -n "phoneNumber" js/main.js | head -1
 
