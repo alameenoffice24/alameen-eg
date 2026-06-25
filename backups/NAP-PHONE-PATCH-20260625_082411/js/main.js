@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (btnCopy) {
     btnCopy.addEventListener('click', function () {
-      var phoneNumber = '+201011212424';
+      var phoneNumber = '+201030008802';
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(phoneNumber)
           .then(function () { showToast('تم نسخ رقم الهاتف!'); closeModal(); })
