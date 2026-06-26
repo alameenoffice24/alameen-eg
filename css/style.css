@@ -550,8 +550,12 @@ ul { list-style: none; }
 .chat-new-messages[hidden] { display: none; }
 .chat-new-messages:hover { transform: translateX(-50%) translateY(-1px); }
 .chat-form {
-  display: grid; grid-template-columns: 1fr 44px; gap: 0.55rem; padding: 0.5rem 0.7rem;
+  display: grid; grid-template-columns: 1fr 44px 44px; gap: 0.55rem; padding: 0.5rem 0.7rem;
   background: #fff; border-top: 1px solid var(--border);
+}
+/* Attach (passport) button: same size as send, softer secondary look. */
+#chat-attach-btn {
+  background: var(--bg-soft); color: var(--navy-700); border: 1px solid var(--border);
 }
 .chat-form textarea {
   min-height: 44px; max-height: 120px; resize: none; border: 1px solid var(--border);

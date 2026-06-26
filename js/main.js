@@ -624,4 +624,63 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   }
+
+  // ── Passport image attach (MC-4ZG) ────────────────────────────────────────
+  // Sends an inline passport photo through the SAME website-chat endpoint as text.
+  // The backend carries it as a data: URL → n8n brain → canonical /channel-passport-intake
+  // (channel=website). Only processed as a passport when the visitor is mid-booking
+  // (awaiting passports); otherwise the brain treats it as a normal message.
+  var chatFileInput = document.getElementById('chat-file-input');
+  var chatAttachBtn = document.getElementById('chat-attach-btn');
+  if (chatAttachBtn && chatFileInput) {
+    chatAttachBtn.addEventListener('click', function () { chatFileInput.click(); });
+    chatFileInput.addEventListener('change', function () {
+      var file = chatFileInput.files && chatFileInput.files[0];
+      chatFileInput.value = '';
+      if (!file) return;
+      if (!/^image\//.test(file.type || '')) { showToast('من فضلك أرفق صورة جواز السفر'); return; }
+      if (file.size > 6 * 1024 * 1024) { showToast('حجم الصورة كبير (الحد 6 ميجابايت)'); return; }
+      chatInteracted = true;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var dataUrl = String(reader.result || '');
+        var b64 = dataUrl.replace(/^data:[^;]+;base64,/, '');
+        if (!b64) { showToast('تعذّر قراءة الصورة'); return; }
+        addChatMessage('📎 تم إرفاق صورة جواز السفر', 'user', 'local:file:' + Date.now());
+        scrollChatToBottom();
+        var status = addChatMessage('جاري إرسال صورة الجواز ومعالجتها...', 'status', 'local:status:' + Date.now());
+        scrollChatToBottom();
+        if (chatAttachBtn) chatAttachBtn.disabled = true;
+        fetch(chatApiBase.replace(/\/$/, '') + '/api/public/website-chat/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            visitor_id: getVisitorId(),
+            message: '',
+            image_base64: b64,
+            image_mime: file.type || 'image/jpeg',
+            page_url: window.location.href
+          })
+        }).then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (data) {
+            if (!res.ok || data.ok === false) throw new Error(data.error || 'SEND_FAILED');
+            return data;
+          });
+        }).then(function (data) {
+          if (status) status.remove();
+          addChatMessage(data.reply || 'تم استلام صورة الجواز وجاري مراجعتها. هنأكد عليك بعد المراجعة.', 'bot', 'reply:' + (data.conversation_id || '') + ':' + Date.now());
+          scrollChatToBottom();
+          if (data.visitor_id) { try { localStorage.setItem(visitorKey, data.visitor_id); } catch (_) {} }
+          loadConversationHistory({ silent: true, forceScroll: true });
+        }).catch(function () {
+          if (status) status.remove();
+          addChatMessage('تعذّر إرسال صورة الجواز الآن. حاول مرة أخرى أو استخدم واتساب/تليجرام.', 'bot', 'local:error:' + Date.now());
+          scrollChatToBottom();
+        }).finally(function () {
+          if (chatAttachBtn) chatAttachBtn.disabled = false;
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 });
